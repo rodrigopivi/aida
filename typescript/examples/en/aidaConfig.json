@@ -1,0 +1,14 @@
+{
+    "dataset": {
+        "chatitoInputsPath": "./examples/en/intents",
+        "datasetOutputPath": "./public/models",
+        "maxIntentExamplesForTraining": {
+            "default": 500,
+            "affirmative": 700,
+            "negative": 700,
+            "addEventToCalendar": 2500,
+            "playMusic": 2500
+        }
+    },
+    "language": "en"
+}

@@ -1,0 +1,30 @@
+%[greet](600)
+    ~[hi] ~[hi?] ~[hi?]
+    ~[greetings] ~[greetings?]
+    ~[hi] ~[greetings] ~[hi?]
+    ~[greetings] ~[hi] ~[hi?]
+
+~[hi]
+    hi
+    hello
+    hey
+    howdy
+    hola
+
+~[greetings]
+    greetings
+    how are you
+    whats up
+    how are you doing
+    how is it going
+    good morning
+    good afternoon
+    good day
+    good night
+    are you there
+    morning
+    how are things going
+    are you around
+    whatsup
+    sup
+    are you around?

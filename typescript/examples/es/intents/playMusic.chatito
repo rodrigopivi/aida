@@ -1,0 +1,190 @@
+%[playMusic](3000)
+    ~[hi?] ~[playASongOfArtist] @[artist] ~[please?]
+    ~[please?] ~[playSong] @[song] ~[fromAuthor] @[artist]
+    ~[please?] ~[playASongOfArtist] @[artist]
+    ~[playSong] @[song]
+
+@[artist]
+    the beatles
+    daft punk
+    incubus
+    infected mushroom
+    savant
+    astrix
+    camila cabello
+    drake
+    savage garden
+    bob marley
+    sublime
+    artic monkeys
+    no religion
+    craddle of filth
+    sum 45
+    korn
+    beethoven
+    mozart
+    eminem
+    taylor swift
+    rihanna
+    kanye west
+    adele
+    lady gaga
+    zedd
+    bob dylan
+    bruno mars
+    justin beiber
+    britney spears
+    christina aguilera
+    growlers
+    rancid
+    cafeta cuba
+    los autenticos decadentes
+    plastilina mosh
+    marc anthony
+    los del rio
+    corazón
+    loco dice
+    danny ocean
+    soda estereo
+    daddy yankee
+    piso 21
+    greeicy
+    j balvin
+    ozuna
+    maluma
+    rawayana
+    leuzemia
+    los bunkers
+    pedro suarez
+    aventura
+    el perdedor
+    avicii
+    armin van buuren
+    hardwell
+    david guetta
+    martin garrix
+    tiesto
+    carl cox
+    u2
+    eleven eleven
+
+@[song]
+    hey jude
+    yesterday
+    yellow submarine
+    one more time
+    discover
+    something about us
+    drive
+    anna molly
+    are you in
+    gods plan
+    one dance
+    havana
+    beyond the senses
+    freak on a leash
+    nice for what
+    the middle
+    never be the same
+    perfect
+    finesse
+    blowing in the wind
+    someone like you
+    poker face
+    love test
+    womanizer
+    fall back down
+    vivir la vida
+    la macarena
+    matador
+    baracunata
+    mr pmosh
+    la balada del diablo y la muerte
+    whats my age again
+    sin ti
+    corazón
+    criminal
+    escapate conmigo
+    bella y sensual
+    olha a explosao
+    loco
+    machika
+    me rehuso
+    trátame suavemente
+    te boté
+    dura
+    la amo
+    dejala que vuelva
+    dembow
+    amantes
+    ambiente
+    unica
+    sin tu amor
+    al ramerio
+    el perdedor
+    great spiritt
+    state of trance
+    waiting for the night
+    space man
+    young again
+    wake me up
+    levels
+    mad love
+    2u
+    animals
+    in the name of love
+    boom
+    adagio for strings
+    ohh baby
+    space ibiza
+    with or without you
+    one
+    eleven eleven
+
+~[fromAuthor]
+    del autor
+    de
+    por
+    tocada por
+
+~[playSong]
+    ~[cancion]
+    pon ~[cancion?]
+    reproduce ~[cancion?]
+    quiero escuchar ~[cancion?]
+    quiero que pongas ~[cancion?]
+    que suene ~[cancion?]
+    toca
+
+~[cancion]
+    la cancion
+    la melodia
+    el tema
+    el single
+
+~[quiero]
+    quiero
+    deseo
+    quisiera
+    te ordeno
+    desearia
+    pon
+
+~[playASongOfArtist]
+    ~[quiero?] musica de
+    ~[quiero] escuchar a
+    ~[quiero?] escuchar musica de
+    ~[quiero?] escuchar algo de
+    ~[quiero?] que reproduzcas algo de
+    reproduce musica del artista
+    ~[quiero] canciones de
+
+~[hi]
+    hola
+    hi
+    como estas
+    que tal
+
+~[please]
+    por favor
+    porfa

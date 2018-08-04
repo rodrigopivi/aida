@@ -1,0 +1,303 @@
+
+%[addEventToCalendar](3000)
+    ~[please?] ~[agrega al calendario] ~[que?] ~[tengo?] @[calendarEvent] ~[en?] @[dateTime]
+    ~[pon] @[calendarEvent#alarma] ~[en?] @[dateTime]
+    ~[agrega al calendario] ~[que] @[dateTime] ~[tengo?] @[calendarEvent]
+
+@[calendarEvent#alarma]
+    ~[alarma]
+
+@[calendarEvent]
+    cita medica
+    cita con el ~[profesionales]
+    renovar subscripcion telefonica
+    cumpleaños de mi ~[relacionesPersonales]
+    entrevista de trabajo
+    vuelo a ~[ciudad]
+    presentacion de diapositivas
+    comprar comida para perro
+    arreglar ventana
+    informe final
+    resolver bugs en proyecto
+    llamar a ~[nombre]
+    hablar con ~[nombre]
+    visitar a ~[nombre]
+    cita con ~[nombre]
+    ~[alarma]
+    llamar a mi ~[relacionesPersonales]
+    comprar comida para perro
+    compras de diario
+    examen
+    examen de biologia
+    examenes finales
+    final de ciclo
+
+@[dateTime]
+    ~[contextualDate]
+    ~[contextualDate] ~[times?]
+    ~[times?] ~[contextualDate]
+    ~[monthsDates] ~[monthDayExtensions] ~[times?]
+    ~[times?] ~[monthsDates] ~[monthDayExtensions]
+
+~[agrega al calendario]
+    agrega al calendario
+    agrega a mi calendario
+    agrega a el calendario
+    recuerdame
+    recuerda me
+    necesito recordar
+    quiero que me recuerdes
+    puedes agregar al calendario
+    apunta en el calendario
+    agrega a mi agenda
+    agenda
+    quiero que agendes
+    hazme recuerdo
+    necesito que recuerdes
+    agenda en mi calendario
+    apunta en agenda
+    necesito agendar
+    anota en el calendario
+    quiero recordar
+    quiero que me hagas recordar
+
+~[pon]
+    pon ~[que?] la
+    agendar ~[que?]
+    agenda ~[que?]
+    pon
+    pon ~[que?] el
+    programa ~[que?] el
+    pon en mi calendario
+    agrega en mi agenda
+
+~[alarma]
+    alarma
+    reloj de alarma
+    alerta
+    reloj de alerta
+    despertador
+    reloj despertador
+    alarma de despertar
+    alerta de despertar
+    despertador con alarma
+    temporizador de alarma
+
+~[profesionales]
+    programador
+    diseñador
+    medico
+    doctor
+    ingeniero
+    abogado
+    economista
+    fiscal
+    juez
+
+~[tengo]
+    tengo
+    debo ir a
+    asistir a
+    cumplir con
+
+~[relacionesPersonales]
+    novia
+    enamorada
+    familia
+    mama
+    hermano
+    prima
+    primo
+    sobrina
+    sobrino
+    profesor
+    profesora
+    asistente
+    abuela
+    abuelo
+
+~[nombre]
+    diego
+    rodrigo
+    bety
+    lucy
+    bob
+    daniel
+    mari
+    andrea
+    leila
+    gracia
+    jon
+    john
+
+~[ciudad]
+    san francisco
+    sao paulo
+    madrid
+    new york
+    atlanta
+    seattle
+    barcelona
+    milan
+    moscu
+    lima
+    medellin
+    mexico
+    boston
+    santiago
+
+~[en]
+    en
+    para
+    durante
+
+~[que]
+    que
+
+~[please]
+    porfavor
+    por favor
+    porfa
+    porfis
+    please
+    plis
+
+~[contextualDate]
+    hoy
+    mañana
+    este ~[dayNames]
+    el ~[dayNames] de esta semana
+    la próxima semana
+    el ~[dayNames] de la próxima semana
+    el ~[dayNames] que viene
+    el próximo ~[dayNames]
+
+~[dayNames]
+    lunes
+    martes
+    miércoles
+    jueves
+    viernes
+    sabado
+    domingo
+
+~[monthsDates]
+    enero
+    febrero
+    marzo
+    abril
+    mayo
+    junio
+    julio
+    agosto
+    septiembre
+    octubre
+    noviembre
+    diciembre
+
+~[monthDayExtensions]
+    23
+    14
+    30
+    primero
+    1
+    4
+    19
+    3
+    31
+    15
+    26
+
+~[times]
+    ~[11am]
+    ~[8am]
+    ~[12]
+    ~[23pm]
+    ~[13pm]
+    ~[15pm]
+    ~[16pm]
+    ~[20pm]
+
+~[11am]
+    11am
+    11:11
+    11:46am
+    11:00 am
+    1130 am
+    1123am
+    once de la mañana
+    once y media de la mañana
+
+~[8am]
+    8am
+    08:25
+    8:33am
+    8:13 am
+    0803 am
+    8:43 am
+    ocho de la mañana
+    ocho y media de la mañana
+
+~[12]
+    12
+    12:45
+    doce del mediodia
+    12am
+    12:34am
+    1223 am
+    mediodia
+    doce y media del dia
+    doce y cuarto del dia
+
+~[23pm]
+    23pm
+    23:15
+    23:23pm
+    23:11 pm
+    2350 pm
+    once de la noche
+    once y media de la noche
+
+~[13pm]
+    13pm
+    13:05
+    13:16pm
+    1pm
+    1:30pm
+    1:28pm
+    1315pm
+    1355 pm
+    una de la tarde
+    una y media de la tarde
+
+~[15pm]
+    15pm
+    15:56
+    tres de la tarde
+    3pm
+    3:15 pm
+    3:45pm
+    3:15pm
+    0322pm
+    335 pm
+    3:30 afternoon
+
+~[16pm]
+    16pm
+    16:16 pm
+    16:56
+    4 de la tarde
+    4pm
+    4:15pm
+    4:25pm
+    1611pm
+
+~[20pm]
+    20pm
+    20:17
+    8 de la noche
+    8pm
+    8:45pm
+    8 en la noche
+    822 pm
+    0840pm

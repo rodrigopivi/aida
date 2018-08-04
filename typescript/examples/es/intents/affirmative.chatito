@@ -1,0 +1,38 @@
+%[affirmative](800)
+    ~[yes]
+    ~[yes] ~[yes?] ~[please?]
+    entendiste eso ~[yes]
+    tienes razon ~[yes]
+    ~[yes] ~[wantThat]
+    si eso es ~[yes]
+    ~[yes] ~[yes?] ~[yes?] ~[yes?]
+
+~[yes]
+    si
+    correcto
+    yes
+    afirmativo
+    asi es
+    esta bien
+    bien
+
+
+~[wantThat]
+    si quiero eso
+    quiero eso
+    de acuerdo
+    esta bien
+    estoy de acuerdo
+    eso es correcto
+    eso es lo que quiero
+    me entendiste bien
+    asi es correcto
+    eso es lo que quise decir
+    correcto quiero eso
+    asi esta bien
+    me parece bien
+
+
+~[please]
+    porfavor
+    por favor

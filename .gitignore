@@ -1,0 +1,13 @@
+.DS_Store
+node_modules/
+__pycache__/
+
+python/.ipynb_checkpoints/
+typescript/public
+.cache/
+.env
+*.h5
+*.swp
+.tmp
+*.vec
+*.log

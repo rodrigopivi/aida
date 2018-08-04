@@ -1,0 +1,44 @@
+%[negative](800)
+    ~[no]
+    ~[no] ~[no?] ~[please?]
+    mal ~[no]
+    ~[no?] ~[notWhatIWant] ~[no?]
+    ~[no] ~[no?] ~[no?]
+
+~[no]
+    no
+    nope
+    negativo
+    no es correcto
+    incorrecto
+    no señor
+    no señorita
+    no joven
+    no jovencita
+    mal
+    equivocado
+
+~[notWhatIWant]
+    no quiero eso
+    eso no es lo que quiero
+    estoy en desacuerdo
+    no quise decir eso
+    no me entiendes
+    no me entendiste
+    no te pedi eso
+    no esta bien
+    incorrecto
+    no es correcto
+    esta mal
+    entendiste mal
+    entendiste incorrectamente
+    eso es incorrecto
+    te equivocaste
+    esta equivocado
+    no me has entendido bien
+    no estas comprendiendo bien
+    no comprendiste
+
+~[please]
+    porfavor
+    por favor

@@ -1,0 +1,48 @@
+%[affirmative](800)
+    ~[yes]
+    ~[yes] ~[yes?] ~[please?]
+    you got that ~[yes]
+    you're goddamn ~[yes]
+    ~[yes] ~[wantThat]
+    yes that is ~[yes]
+    ~[yes] ~[yes?] ~[yes?] ~[yes?]
+    ~[wantThat]
+
+~[yes]
+    yes
+    right
+    affirmative
+    yes to that
+    correct
+    yep
+    yes sir
+    si
+    correcto
+    ok
+    right
+    allright
+
+~[wantThat]
+    i want that
+    i desire that
+    i agree
+    i want that
+    that is fine
+    that is correct
+    that is what i want
+    you understood me
+    that is right
+    that is what i mean
+    want that
+    im ok with that
+    ok its good
+    im good with that
+    ok its fine
+    is good
+    it is fine
+    im ok with this
+    im good with this
+
+~[please]
+    please
+    pls

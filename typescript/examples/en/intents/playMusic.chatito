@@ -1,0 +1,174 @@
+%[playMusic](3000)
+    ~[hi?] ~[playASongOfArtist] @[artist] ~[please?]
+    ~[please?] ~[playSong] @[song] ~[fromAuthor] @[artist]
+    ~[please?] ~[playASongOfArtist] @[artist]
+    ~[playSong] @[song]
+    ~[please?] ~[playMusic]
+
+@[artist]
+    the beatles
+    daft punk
+    incubus
+    infected mushroom
+    savant
+    astrix
+    camila cabello
+    drake
+    savage garden
+    bob marley
+    sublime
+    artic monkeys
+    no religion
+    craddle of filth
+    sum 45
+    korn
+    beethoven
+    mozart
+    eminem
+    taylor swift
+    rihanna
+    kanye west
+    adele
+    lady gaga
+    zedd
+    bob dylan
+    bruno mars
+    justin beiber
+    britney spears
+    christina aguilera
+    growlers
+    rancid
+
+@[song]
+    hey jude
+    yesterday
+    yellow submarine
+    one more time
+    discover
+    something about us
+    drive
+    anna molly
+    are you in
+    gods plan
+    one dance
+    havana
+    beyond the senses
+    freak on a leash
+    nice for what
+    the middle
+    never be the same
+    perfect
+    finesse
+    blowing in the wind
+    someone like you
+    poker face
+    love test
+    womanizer
+    fall back down
+    vivir la vida
+    la macarena
+    matador
+    baracunata
+    mr pmosh
+    la balada del diablo y la muerte
+    whats my age again
+    sin ti
+    corazon
+    criminal
+    escapate conmigo
+    bella y sensual
+    olha a explosao
+    loco
+    machika
+    me rehuso
+    tratame suavemente
+    te bote
+    dura
+    la amo
+    dejala que vuelva
+    dembow
+    amantes
+    ambiente
+    unica
+    sin tu amor
+    al ramerio
+    el perdedor
+    great spiritt
+    state of trance
+    waiting for the night
+    space man
+    young again
+    wake me up
+    levels
+    mad love
+    2u
+    animals
+    in the name of love
+    boom
+    adagio for strings
+    ohh baby
+    space ibiza
+    with or without you
+    one
+    eleven eleven
+
+
+~[fromAuthor]
+    from author
+    from
+    of
+    by
+    signed by
+    performed by
+
+~[playMusic]
+    ~[i want?] music
+    play music
+    music
+
+~[playSong]
+    ~[i want?] the ~[single]
+    play the ~[single]
+    reproduce the ~[single]
+    ~[i want] to hear
+    ~[i want] to listen to
+    play
+    reproduce
+    ~[i want] to hear the ~[single]
+
+~[single]
+    melody
+    song
+    single
+
+~[playASongOfArtist]
+    ~[i want] to hear a song of
+    ~[i want] to listen to
+    play some music from
+    ~[i want] to hear a ~[single] from
+    reproduce music from
+    play songs from
+    play music from
+    ~[i want] to hear
+    music ~[fromAuthor]
+    some music of
+
+~[i want]
+    want
+    i want
+    i would like
+    i wish
+    wish
+    would like
+    want you
+
+~[hi]
+    hi
+    hey
+    dude
+    hello
+
+~[please]
+    please
+    pls
+    plz

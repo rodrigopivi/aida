@@ -1,0 +1,297 @@
+
+%[addEventToCalendar](3000)
+    ~[please?] ~[add to calendar] @[calendarEvent] ~[at] @[dateTime]
+    ~[set the] @[calendarEvent#alarm] ~[at?] @[dateTime]
+    ~[add to calendar] ~[at] @[dateTime] ~[i have?] @[calendarEvent] 
+
+@[calendarEvent#alarm]
+    ~[alarm]
+
+~[i have]
+    that i have to
+    i have to
+    have to go
+    need to
+    must do
+
+@[calendarEvent]
+    medical appointment
+    appointment with ~[service provider]
+    renew phone subscription
+    ~[persons] birthday
+    job interview
+    flight to spain
+    call girlfriend
+    flight to san francisco
+    call mom
+    flight to ~[city]
+    slides presentation
+    buy food dog
+    fix window
+    final inform
+    fix project issues
+    ~[some action]
+    presentation meeting
+    meet and presentation
+    ~[alarm]
+
+@[dateTime]
+    ~[contextualDate] ~[times?]
+    ~[times?] ~[contextualDate]
+    ~[monthsDates] ~[monthDayExtensions] ~[times?]
+    ~[times?] ~[monthsDates] ~[monthDayExtensions]
+
+~[set the]
+    set the
+    set an
+    schedule the
+    need an
+    program the
+
+~[alarm]
+    alarm
+    alarm clock
+    alert
+    alert clock
+    wake up alarm
+
+~[service provider]
+    developer
+    designer
+    medic
+    lawyer
+    economist
+    ceo
+    judge
+    attorney
+    teacher
+    professor
+
+~[persons]
+    ~[person name]
+    kids
+    fathers
+    grandmother
+    mothers
+    knephew
+
+~[wake up]
+    wake me up
+    wake up
+
+~[some action]
+    call ~[person name]
+    talk with ~[person name]
+    visit ~[person name]
+
+~[person name]
+    diego
+    rodrigo
+    bety
+    lucy
+    bob
+    daniel
+    mari
+    andrea
+    leila
+    gracia
+    jon
+    john
+    christopher
+    stanley
+    mohammed
+    chrstina
+    metheu
+    lianne
+    bruno
+    mauricio
+    claudia
+
+~[city]
+    san francisco
+    sao paulo
+    madrid
+    new york
+    atlanta
+    seattle
+    barcelona
+    milan
+    moscu
+    lima
+    medellin
+    mexico
+    boston
+    santiago
+    austin
+    miami
+    phoenix
+    los angeles
+    philadelphia
+    chicago
+    hawaii
+
+~[at]
+    at
+    scheduled on
+    for
+
+~[add to calendar]
+    add to the calendar
+    add to my agenda
+    remind me
+    i need to remember to
+    schedule at my calendar
+    i need to schedule
+    schedule
+    make me a reminder
+    i want to remember
+    would like to remember
+    need to remember
+    save at the calendar
+    add to schedule
+
+~[please]
+    please
+    pls
+
+~[contextualDate]
+    today
+    tomorrow
+    this ~[dayNames]
+    next week
+
+~[dayNames]
+    monday
+    tuesday
+    thursday
+    tuesday
+    friday
+    saturday
+    sunday
+
+~[monthsDates]
+    january
+    february
+    march
+    april
+    may
+    june
+    july
+    august
+    september
+    october
+    november
+    dicember
+
+~[monthDayExtensions]
+    the 23rd
+    23
+    14th
+    14
+    30
+    1st
+    the 4th
+    19th
+    the 3rd
+    31th
+    15
+    26
+    sixth
+    6th
+    7th
+    seventh
+    fourth
+    fifth
+
+~[times]
+    ~[11am]
+    ~[8am]
+    ~[12]
+    ~[23pm]
+    ~[13pm]
+    ~[15pm]
+    ~[16pm]
+    ~[20pm]
+
+~[11am]
+    11am
+    11:11
+    11:46am
+    11:00 am
+    1130 am
+    1123am
+    eleven at morning
+    eleven and a half at morning
+
+~[8am]
+    8am
+    08:25
+    8:33am
+    8:13 am
+    0803 am
+    8:43 am
+    eight at morning
+    eight and a half at morning
+
+~[12]
+    12
+    12:45
+    twelve noon
+    12am
+    12:34am
+    1223 am
+    midday
+    twelve and a half
+
+~[23pm]
+    23pm
+    23:15
+    23:23pm
+    23:11 pm
+    2350pm
+    eleven at night
+    eleven in the night
+
+~[13pm]
+    13pm
+    13:05
+    13:16pm
+    1pm
+    1:30pm
+    1:28pm
+    1315pm
+    1355 pm
+    one in the afternoon
+    one and a half in the afternoon
+
+~[15pm]
+    15pm
+    15:56
+    3 in the afternoon
+    3pm
+    3:15 pm
+    3:45pm
+    3:15pm
+    0322pm
+    335 pm
+    3:30 afternoon
+
+~[16pm]
+    16pm
+    16:16 pm
+    16:56
+    4 in the afternoon
+    4pm
+    4:15pm
+    4:25pm
+    1611pm
+
+~[20pm]
+    20pm
+    20:17
+    8 in the night
+    8pm
+    8:45pm
+    8 at night
+    822 pm
+    0840pm

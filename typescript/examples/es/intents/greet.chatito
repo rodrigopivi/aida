@@ -1,0 +1,31 @@
+%[greet](600)
+    ~[hi] ~[hi?] ~[hi?]
+    ~[greetings] ~[greetings?]
+    ~[hi] ~[greetings] ~[hi?]
+    ~[greetings] ~[hi] ~[hi?]
+
+~[hi]
+    hi
+    hola
+    holas
+    buenas
+    saludos
+
+~[greetings]
+    que tal
+    como estas
+    qué tal?
+    cómo estás?
+    cómo estas?
+    todo bien?
+    como te va
+    como va todo
+    buenos dias
+    buenas tardes
+    buenas noches
+    muy buenos dias
+    muy buenas tardes
+    muy buenas noches
+    espero todo bien
+    estas por ahi
+    hey estas
