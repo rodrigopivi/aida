@@ -2,7 +2,6 @@ module.exports = {
     siteMetadata: {
         title: 'Aida'
     },
-    pathPrefix: "/aida",
     plugins: [
         {
             resolve: 'gatsby-plugin-page-creator',

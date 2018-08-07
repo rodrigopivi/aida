@@ -45,7 +45,7 @@ const Wrapper = styled.section`
         margin: 0 auto;
         flex-direction: column;
         word-wrap: break-word;
-        background-color: #fff;
+        background-color: #fcfcfc;
         background-clip: border-box;
         text-align: center;
         border-radius: 4px;
@@ -74,7 +74,7 @@ export default function LandingSecondary() {
         <Wrapper>
             <QueueAnim component={Row} type="bottom" className="page row text-center" delay={500}>
                 <Col className="card-wrapper" key="1" md={8} xs={24}>
-                    <Link className="card" href="/overview" to="/overview">
+                    <Link className="card" href="/demo" to="/demo">
                         <h3>Dataset generation</h3>
                         <Icon type="database" style={{ color: '#1890ff', fontWeight: 'bold', fontSize: '6em', paddingBottom: '.3em' }} />
                         <div className="card-body">
@@ -86,7 +86,7 @@ export default function LandingSecondary() {
                     </Link>
                 </Col>
                 <Col className="card-wrapper" key="2" md={8} xs={24}>
-                    <Link className="card" href="/overview" to="/overview">
+                    <Link className="card" href="/demo" to="/demo">
                         <h3>Run everywhere</h3>
                         <Icon type="rocket" style={{ color: '#1890ff', fontWeight: 'bold', fontSize: '6em', paddingBottom: '.3em' }} />
                         <div className="card-body">
@@ -98,7 +98,7 @@ export default function LandingSecondary() {
                     </Link>
                 </Col>
                 <Col className="card-wrapper" key="3" md={8} xs={24}>
-                    <Link className="card" href="/overview" to="/overview">
+                    <Link className="card" href="/demo" to="/demo">
                         <h3>Easy integration</h3>
                         <Icon type="api" style={{ color: '#1890ff', fontWeight: 'bold', fontSize: '6em', paddingBottom: '.3em' }} />
                         <div className="card-body">

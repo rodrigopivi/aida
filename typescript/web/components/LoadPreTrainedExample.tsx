@@ -31,12 +31,12 @@ export default class LoadPreTrainedExample extends React.Component<{}, ILoadPreT
         // tslint:enable:no-console
     };
 
-    // public componentWillUnmount() {
-    //     // tslint:disable-next-line:no-console
-    //     console.log(tf.memory());
-    //     tf.disposeVariables();
-    //     (window as any).tf = tf;
-    // }
+    public componentWillUnmount() {
+        // tslint:disable-next-line:no-console
+        console.log(tf.memory());
+        tf.disposeVariables();
+        (window as any).tf = tf;
+    }
 
     public render() {
         if (this.state.modelsLoaded && this.pipeline) {
@@ -47,39 +47,52 @@ export default class LoadPreTrainedExample extends React.Component<{}, ILoadPreT
             ? this.state.downloadProgress === 100
                 ? 'Loading Models...'
                 : 'Downloading...'
-            : 'Start example';
+            : 'Start demo';
         return (
             <Row type="flex">
-                <Col span={12}>
-                    <h2>Online pre-trained example</h2>
-                    <p>
-                        This example shows a trained pipeline running from the browser, you can also download the model and run it from
-                        other environments like node, or train one to run in python or export it to mobile devices too.
-                    </p>
-                    <p>
-                        The pipeline is composed of two models. Text classification model determines the intent of a sentence, and named
-                        entity recognition model extracts the slots. Both models were trained with thousands of example sentences generated
-                        easily using{' '}
-                        <a href="https://rodrigopivi.github.io/Chatito/" target="_blank">
-                            Chatito DSL
-                        </a>
-                        . Both models implement minimalistic close to state of the art deep learning networks that are implemented to train
-                        in multiple runtimes thanks to{' '}
-                        <a href="https://js.tensorflow.org/" target="_blank">
-                            Tensorflow.js
-                        </a>{' '}
-                        for javascript and{' '}
-                        <a href="https://keras.io/" target="_blank">
-                            Keras
-                        </a>{' '}
-                        for Python. The embeddings dictionary for each language is created from pre-trained{' '}
-                        <a href="https://fasttext.cc/" target="_blank">
-                            FastText
-                        </a>{' '}
-                        files that are filtered to only use n-grams of 3 letters or less, to reduce the size of the model from several
-                        gigabytes to few megabytes. The simplicity of the pipeline comes from all this tools working together.
-                    </p>
-                    <p>Click 'start example' to continue.</p>
+                <Col span={12} style={{ textAlign: 'justify' }}>
+                    <h1>Build conversational user experiences</h1>
+                    <h3>Aida is a library that helps you build conversational user experiences with this concepts in mind:</h3>
+                    <ul>
+                        <li>
+                            <strong>Universal application:</strong> The trained models should be able to run anywhere, that is why the
+                            models have two mirror implementations: in{' '}
+                            <a href="https://js.tensorflow.com/" target="_blank">
+                                TensorflowJS
+                            </a>{' '}
+                            to be able to train and run from browsers or nodejs, and in{' '}
+                            <a href="https://keras.io/" target="_blank">
+                                Keras
+                            </a>{' '}
+                            to run in python and export to mobile devices (CoreML for iOS and TensorFlow for Android).
+                        </li>
+                        <li>
+                            <strong>Offline support:</strong> It should be able to train and make predictions without connectivty, no need
+                            to have a server-side api, although the trained models can also run server-side behind an api if desired.
+                        </li>
+                        <li>
+                            <strong>Low memory consumption:</strong> Having small file size and memory consumption is very important if we
+                            want to run from browsers. Most NLU models use huge dictionaries (several gigabytes size) like word2vec, to
+                            solve this problem, we are only using pre-trained{' '}
+                            <a href="https://fasttext.cc/" target="_blank">
+                                fastText
+                            </a>{' '}
+                            bigram and unigram embeddings, this keeps the dictionary very small, fast to download.
+                        </li>
+                        <li>
+                            <strong>Accurate:</strong> Carefully crafted, close to state of the art neural network models for text
+                            classification and named entity recognition, the models will only get better as the field progresses and the
+                            community expands.
+                        </li>
+                        <li>
+                            <strong>Easy to use:</strong> Getting started by creating a dataset and training couldn't be easier thanks to{' '}
+                            <a href="https://rodrigopivi.github.io/Chatito" target="_blank">
+                                Chatito
+                            </a>
+                            , you can create a large dataset in minutes, and start training without any setup, just from the browser.
+                        </li>
+                    </ul>
+                    <p>Click 'start demo' to continue.</p>
                 </Col>
                 <Col span={12}>
                     <Card style={{ marginLeft: '2em', textAlign: 'center' }}>
@@ -103,7 +116,7 @@ export default class LoadPreTrainedExample extends React.Component<{}, ILoadPreT
                             </Button>
                         </div>
                         <br />
-                        <p>Will download the pre-trained models (about 20mb compressed)</p>
+                        <p>Will download the trained model (about 3mb compressed)</p>
                     </Card>
                 </Col>
             </Row>

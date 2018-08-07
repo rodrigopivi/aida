@@ -44,7 +44,7 @@ export default class TrainExample extends React.Component<{}, ITrainExampleState
         return (
             <Row type="flex">
                 <Col span={12}>
-                    <h2>Train example from scratch</h2>
+                    <h2>Train your model from scratch</h2>
                     <p>
                         The pipeline is composed of two models. Text classification model determines the intent of a sentence, named entity
                         recognition model extracts the slots. Once the training finishes, will run the test dataset on them and give you a
@@ -66,7 +66,7 @@ export default class TrainExample extends React.Component<{}, ITrainExampleState
                         </div>
                         <br />
                         <p>
-                            Will download the pre-trained embeddings (about 17mb compressed), generate the dataset, then train and test the
+                            Will download the embeddings dictionary (about 1mb compressed), generate the dataset, then train and test the
                             models. This process may take several minutes to complete, you will get feedback of the progress but the webpage
                             might feel unresponsive while training.
                         </p>
