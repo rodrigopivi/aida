@@ -1,16 +1,17 @@
 import { IDefaultDataset } from 'chatito/dist/adapters/web';
+import { ISentenceTokens } from 'chatito/dist/types';
 import { flatten, shuffle } from 'lodash';
-import { IAidaPipelineConfig, IAidaTokenizer, IDictionariesFromDataset, IDictJsonItem, IPretrainedDictionary } from '../types';
+import { IAidaTokenizer, IDictionariesFromDataset, IDictJsonItem, IPretrainedDictionary } from '../types';
 
 /// Build an object that contains the max words size, the train x, y and the intents
 export function dictionariesFromDataset(
-    data: IDefaultDataset,
+    training: IDefaultDataset,
+    testing: IDefaultDataset,
     tokenizer: IAidaTokenizer,
-    language: 'en' | 'es',
-    maxIntentExamplesForTraining: IAidaPipelineConfig['dataset']['maxIntentExamplesForTraining']
+    language: 'en' | 'es'
 ) {
     const ret: IDictionariesFromDataset = {
-        intents: Object.keys(data),
+        intents: Object.keys(training),
         intentsWithSlots: [],
         language,
         maxWordsPerSentence: 0,
@@ -24,11 +25,12 @@ export function dictionariesFromDataset(
     };
     const intentTrainingStats: number[] = new Array(ret.intents.length).fill(0);
     const intentTestingStats: number[] = new Array(ret.intents.length).fill(0);
-    let processedSentences: any[] = [];
+    let processedTrainingSentences: Array<{ sentence: string; intentId: number; tagsForSentence: number[] }> = [];
+    let processedTestingSentences: Array<{ sentence: string; intentId: number; tagsForSentence: number[] }> = [];
     const intentsWithSlotsSet = new Set();
     ret.intents.forEach(intent => {
         let containsSlots = false;
-        const intentProcessedSentences = data[intent].map(sentenceTokens => {
+        const getProcessedSentence = (sentenceTokens: ISentenceTokens[]) => {
             const y2Tags: number[][] = sentenceTokens.map(token => {
                 const words = tokenizer.splitSentenceToWords(token.value);
                 const encodedSentenceFrag: number[] = new Array(words.length).fill(0);
@@ -56,24 +58,24 @@ export function dictionariesFromDataset(
             }
             const intentId = ret.intents.findIndex(k => k === intent);
             return { sentence, intentId, tagsForSentence };
-        });
-        processedSentences = processedSentences.concat(intentProcessedSentences);
+        };
+        const intentProcessedSentences = training[intent].map(getProcessedSentence);
+        processedTrainingSentences = processedTrainingSentences.concat(intentProcessedSentences);
+        const intentTestingProcessedSentences = testing[intent].map(getProcessedSentence);
+        processedTestingSentences = processedTestingSentences.concat(intentTestingProcessedSentences);
     });
     ret.intentsWithSlots = [...intentsWithSlotsSet];
-    shuffle(processedSentences).forEach(s => {
-        const intentKey = ret.intents[s.intentId];
-        const maxTrainingExamplesForIntent = maxIntentExamplesForTraining[intentKey] || maxIntentExamplesForTraining.default;
-        if (intentTrainingStats[s.intentId] >= maxTrainingExamplesForIntent) {
-            intentTestingStats[s.intentId]++;
-            ret.testX.push(s.sentence);
-            ret.testY.push(s.intentId);
-            ret.testY2.push(s.tagsForSentence);
-        } else {
-            intentTrainingStats[s.intentId]++;
-            ret.trainX.push(s.sentence);
-            ret.trainY.push(s.intentId);
-            ret.trainY2.push(s.tagsForSentence);
-        }
+    shuffle(processedTrainingSentences).forEach(s => {
+        intentTrainingStats[s.intentId]++;
+        ret.trainX.push(s.sentence);
+        ret.trainY.push(s.intentId);
+        ret.trainY2.push(s.tagsForSentence);
+    });
+    shuffle(processedTestingSentences).forEach(s => {
+        intentTestingStats[s.intentId]++;
+        ret.testX.push(s.sentence);
+        ret.testY.push(s.intentId);
+        ret.testY2.push(s.tagsForSentence);
     });
     const stats = ret.intents.map((intentKey, index) => ({
         intent: intentKey,

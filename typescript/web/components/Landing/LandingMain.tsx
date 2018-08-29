@@ -55,7 +55,7 @@ export default function LandingMain() {
             <Row type="flex" className="page text-center">
                 <Col span={17}>
                     <QueueAnim type="bottom" leaveReverse key="landing-main">
-                        <ColoredText style={{ display: 'block' }}>
+                        <ColoredText style={{ display: 'block' }} className="animated">
                             <h2 key="title">Build conversational user experiences</h2>
                         </ColoredText>
                         <span key="line" className="separator" />
@@ -66,7 +66,7 @@ export default function LandingMain() {
                                 Use open source AI models that can train from the browser, nodejs or python and can run everywhere.
                             </span>
                             <br />
-                            <Link to="/demo" href="/demo" key="3">
+                            <Link to="/demo" key="3">
                                 <Button type="primary">Get started</Button>
                             </Link>
                         </QueueAnim>

@@ -6,16 +6,10 @@ import * as tf from '@tensorflow/tfjs';
 export interface IAidaPipelineConfig {
     // Configuration properties for dataset generation
     dataset: {
-        // Path to the chatito definition files. e.g.: '../../intents'
-        chatitoInputsPath: string;
-        // will write 3 files here: dataset_(`params`|`testing`|`training`).json. e.g.: '../../public/models'
-        datasetOutputPath: string;
-        // Limits the amount of training examples each intent can have, so that if the intent
-        // produces more examples, those will go to the testing dataset. e.g.: { default: 100, someIntent: 200 }
-        maxIntentExamplesForTraining: {
-            default: number;
-            [intent: string]: number;
-        };
+        trainingDataset: string;
+        testingDataset: string;
+        // will write 3 a file here: dataset_(`params`|`testing`|`training`).json. e.g.: '../../public/models'
+        modelsOutput: string;
     };
     language: 'en' | 'es';
 }

@@ -1,4 +1,4 @@
-%[wtf](600)
+%[wtf]('training': '300', 'testing': '100')
     ~[noise] ~[rudeness?] ~[rudeness?] ~[noise?] ~[rudeness?] ~[noise?]
     ~[noise]~[noise?]~[noise?]
     ~[rudeness] ~[rudeness?] ~[rudeness?]

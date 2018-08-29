@@ -1,4 +1,4 @@
-%[affirmative](800)
+%[affirmative]('training': '300', 'testing': '100')
     ~[yes]
     ~[yes] ~[yes?] ~[please?]
     you got that ~[yes]

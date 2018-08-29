@@ -36,31 +36,18 @@ async function copyFile(source: string, target: string) {
 
 const datasetGeneration = async (configFile: string) => {
     const config: IAidaPipelineConfig = JSON.parse(fs.readFileSync(path.join(process.cwd(), configFile), 'utf8'));
-    const FULL = {} as webAdapter.IDefaultDataset;
-    const intentsFullPath = path.join(process.cwd(), config.dataset.chatitoInputsPath);
-    for (const filename of fs.readdirSync(intentsFullPath)) {
-        const filenameSplit = filename.split('.');
-        const extension = filenameSplit.pop();
-        if (extension !== 'chatito') {
-            continue;
-        }
-        const chatitoGrammar = fs.readFileSync(intentsFullPath + '/' + filename, 'utf8');
-        const fullFileDataset = await webAdapter.adapter(chatitoGrammar);
-        for (const intentKey in fullFileDataset) {
-            if (fullFileDataset.hasOwnProperty(intentKey)) {
-                FULL[intentKey] = FULL[intentKey] ? FULL[intentKey].concat(fullFileDataset[intentKey]) : fullFileDataset[intentKey];
-            }
-        }
-    }
-    process.stdout.write(`Generation done, processing the dictionary...\n`);
+    const fullTrainingDatasetPath = path.join(process.cwd(), config.dataset.trainingDataset);
+    const fullTestingDatasetPath = path.join(process.cwd(), config.dataset.testingDataset);
+    const training: webAdapter.IDefaultDataset = JSON.parse(fs.readFileSync(fullTrainingDatasetPath, 'utf8'));
+    const testing: webAdapter.IDefaultDataset = JSON.parse(fs.readFileSync(fullTestingDatasetPath, 'utf8'));
     const { tokenizer, dictionary } = getTokenizerAndDictionaryForLanguage(config.language);
     const {
         dictionary: { maxWordsPerSentence, slotsToId, intents, intentsWithSlots, testX, testY, testY2, trainX, trainY, trainY2, language },
         stats
-    } = dictionariesFromDataset(FULL, tokenizer, config.language, config.dataset.maxIntentExamplesForTraining);
+    } = dictionariesFromDataset(training, testing, tokenizer, config.language);
     process.stdout.write(`Saving files...\n`);
     fs.writeFileSync(
-        path.join(process.cwd(), config.dataset.datasetOutputPath, 'dataset_params.json'),
+        path.join(process.cwd(), config.dataset.modelsOutput, 'dataset_params.json'),
         JSON.stringify({
             intents,
             intentsWithSlots,
@@ -70,7 +57,7 @@ const datasetGeneration = async (configFile: string) => {
         } as IDatasetParams)
     );
     fs.writeFileSync(
-        path.join(process.cwd(), config.dataset.datasetOutputPath, 'dataset_training.json'),
+        path.join(process.cwd(), config.dataset.modelsOutput, 'dataset_training.json'),
         JSON.stringify({
             trainX,
             trainY,
@@ -78,14 +65,14 @@ const datasetGeneration = async (configFile: string) => {
         } as ITrainingParams)
     );
     fs.writeFileSync(
-        path.join(process.cwd(), config.dataset.datasetOutputPath, 'dataset_testing.json'),
+        path.join(process.cwd(), config.dataset.modelsOutput, 'dataset_testing.json'),
         JSON.stringify({
             testX,
             testY,
             testY2
         } as ITestingParams)
     );
-    await copyFile(dictionary, path.join(process.cwd(), config.dataset.datasetOutputPath, 'dictionary.json'));
+    await copyFile(dictionary, path.join(process.cwd(), config.dataset.modelsOutput, 'dictionary.json'));
     process.stdout.write(`Done! ${JSON.stringify(stats, null, 2)}`);
 };
 

@@ -1,4 +1,4 @@
-%[negative](800)
+%[negative]('training': '300', 'testing': '100')
     ~[no]
     ~[no] ~[no?] ~[please?]
     mal ~[no]

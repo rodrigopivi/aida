@@ -18,7 +18,7 @@ def get_tokenizer(language):
 default_pipeline_definition = {
     'config': {
         'classification': {
-            'epochs': 3,
+            'epochs': 5,
             'filterSizes': [2, 4, 8],
             'lowConfidenceThreshold': 0.3,
             'numFilters': 128,
@@ -32,7 +32,7 @@ default_pipeline_definition = {
             'trainingValidationSplit': 0.3,
         },
         'ner': {
-            'epochs': 3,
+            'epochs': 5,
             'lowConfidenceThreshold': 0.2,
             'maxCharsPerWord': 20,
             'numFilters': [256, 128],

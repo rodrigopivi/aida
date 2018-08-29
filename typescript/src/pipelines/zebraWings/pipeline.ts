@@ -19,7 +19,7 @@ function getTokenizer(language: 'en' | 'es') {
 const defaultPipelineDefinition: types.IPipelineDefinition = {
     config: {
         classification: {
-            epochs: 3,
+            epochs: 5,
             filterSizes: [2, 4, 8],
             lowConfidenceThreshold: 0.3,
             numFilters: 128
@@ -33,7 +33,7 @@ const defaultPipelineDefinition: types.IPipelineDefinition = {
             trainingValidationSplit: 0.3
         },
         ner: {
-            epochs: 3,
+            epochs: 5,
             lowConfidenceThreshold: 0.2,
             maxCharsPerWord: 20,
             numFilters: [256, 128]

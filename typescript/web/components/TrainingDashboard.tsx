@@ -11,6 +11,7 @@ const globalLog: string[] = [
     '==================================================================================================',
     'WARNING: Training may take several minutes depending on your hardware, your browser may be slow while training.',
     'NOTE: Will train classification model, then NER model, then run the test dataset on both and finally download the trained models.',
+    '        The line-plotting of the training models will show at the end to avoid extra GPU/CPU load during training.',
     '=================================================================================================='
 ];
 const LoggerFeed = styled.div`
@@ -40,6 +41,7 @@ interface ITrainingDashboardState {
     pipelineFinishedTraining: boolean;
     valuesClassification: ILineChartDataValues;
     valuesNer: ILineChartDataValues;
+    plot: boolean;
 }
 
 export default class TrainingDashboard extends React.Component<ITrainingDashboardProps, ITrainingDashboardState> {
@@ -47,6 +49,7 @@ export default class TrainingDashboard extends React.Component<ITrainingDashboar
         currentStep: 0,
         logLinesCounter: 0,
         pipelineFinishedTraining: false,
+        plot: false, // only plot at the end of training to make training fast (avoid any gpu external use)
         valuesClassification: [],
         valuesNer: []
     };
@@ -112,9 +115,10 @@ export default class TrainingDashboard extends React.Component<ITrainingDashboar
             );
         }
         const batchInfo = `Batch ${values.length} of ${stats[stats.length - 1].totalBatches}`;
+        const lineChart = this.state.plot ? <LineChart dataValues={values} /> : null;
         return (
             <Card title={title} extra={batchInfo} style={{ minHeight: '100%' }}>
-                <LineChart dataValues={values} />
+                {lineChart}
                 <p style={{ fontSize: '12px' }}>
                     <strong>Train Accuracy:</strong> {stats[stats.length - 1].trainingAccuracy}
                     <br />
@@ -176,5 +180,6 @@ export default class TrainingDashboard extends React.Component<ITrainingDashboar
         logger.log(JSON.stringify(stats, null, 2));
         logger.log('==================================================================================================');
         await this.pipeline.save({ classificationPath: 'downloads://classification', nerPath: 'downloads://ner' });
+        this.setState({ plot: true });
     };
 }

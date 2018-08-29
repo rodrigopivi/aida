@@ -1,4 +1,4 @@
-%[playMusic](3000)
+%[playMusic]('training': '800', 'testing': '500')
     ~[hi?] ~[playASongOfArtist] @[artist] ~[please?]
     ~[please?] ~[playSong] @[song] ~[fromAuthor] @[artist]
     ~[please?] ~[playASongOfArtist] @[artist]

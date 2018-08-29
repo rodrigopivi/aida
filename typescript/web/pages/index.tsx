@@ -11,6 +11,6 @@ export default () => {
         <LandingMain key="main" />,
         <LandingSecondary key="secondary" />,
         <LandingFooter key="footer" />,
-        <DefaultHeader />
+        <DefaultHeader key="default_header" />
     ];
 };

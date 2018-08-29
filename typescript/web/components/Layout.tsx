@@ -30,10 +30,8 @@ export default class MainLayout extends React.Component<any, {}> {
         return (
             <Layout style={{ minHeight: '100vh' }}>
                 <Header style={{ background: '#fcfcfc', padding: 0, display: 'flex' }}>
-                    <Logo style={{ textAlign: 'right', width: 200, paddingLeft: 24, paddingRight: 24 }}>
-                        <Link to="/" href="/">
-                            {`< Aida />`}
-                        </Link>
+                    <Logo style={{ textAlign: 'right', width: 200, paddingLeft: 24, paddingRight: 24 }} className="static">
+                        <Link to="/">{`< Aida />`}</Link>
                     </Logo>
                     <div style={{ flex: 1 }} />
                     <div style={{ padding: '0 48px 0 24px', display: 'inline-block', textAlign: 'right', float: 'right' }}>
@@ -46,13 +44,13 @@ export default class MainLayout extends React.Component<any, {}> {
                     <Layout.Sider width={200} breakpoint="lg" collapsedWidth="0" theme="light" style={{ backgroundColor: '#fcfcfc' }}>
                         <Menu theme="light" mode="inline" defaultSelectedKeys={[defaultSelectedKeys]} style={{ background: '#fcfcfc' }}>
                             <Menu.Item key="0">
-                                <Link to="/demo" href="/demo">
+                                <Link to="/demo">
                                     <Icon type="right-circle-o" />
                                     Demo
                                 </Link>
                             </Menu.Item>
                             <Menu.Item key="1">
-                                <Link to="/train" href="/train">
+                                <Link to="/train">
                                     <Icon type="right-circle-o" />
                                     Train your own
                                 </Link>
