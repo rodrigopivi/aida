@@ -5,7 +5,6 @@ import { withPrefix } from 'gatsby-link';
 import * as React from 'react';
 import { AidaPipeline } from '../../src/pipelines/zebraWings/pipeline';
 import * as types from '../../src/types';
-import { buildDictionary } from '../../src/utils/dictionaryUtils';
 import TrainedPipelineTestInput from './TrainedPipelineTestInput';
 
 interface ILoadPreTrainedExample {
@@ -127,31 +126,41 @@ export default class LoadPreTrainedExample extends React.Component<{}, ILoadPreT
         const modelsUrls = {
             keras: {
                 classification: withPrefix('/models/pretrained/keras/classification/model.json'),
+                embedding: withPrefix('/models/pretrained/keras/embedding/model.json'),
                 ner: withPrefix('/models/pretrained/keras/ner/model.json')
             },
             node: {
                 classification: withPrefix('/models/pretrained/node/classification/model.json'),
+                embedding: withPrefix('/models/pretrained/node/embedding/model.json'),
                 ner: withPrefix('/models/pretrained/node/ner/model.json')
             },
             web: {
                 classification: withPrefix('/models/pretrained/web/classification.json'),
+                embedding: withPrefix('/models/pretrained/web/embedding.json'),
                 ner: withPrefix('/models/pretrained/web/ner.json')
             }
         };
+        const pretrainedEmbedding = await tf.loadModel(modelsUrls[backend].embedding);
         const pretrainedClassifier = await tf.loadModel(modelsUrls[backend].classification);
         const pretrainedNer = await tf.loadModel(modelsUrls[backend].ner);
-        return { pretrainedClassifier, pretrainedNer };
+        return { pretrainedEmbedding, pretrainedClassifier, pretrainedNer };
     };
 
     private loadSavedModels = async () => {
-        const files = [withPrefix('/models/dictionary.json'), withPrefix('/models/dataset_params.json')];
+        const files = [withPrefix('/models/ngram_to_id_dictionary.json'), withPrefix('/models/dataset_params.json')];
         const jsonFiles = await this.downloadFiles(files);
-        const embeddingDictionaryJson = jsonFiles[0].data;
+        const ngramToIdDictionary = jsonFiles[0].data;
         const datasetParams = jsonFiles[1].data;
-        const { pretrainedClassifier, pretrainedNer } = await this.downloadsTrainedModel(this.state.selectedModel);
-        const dictionary = buildDictionary(embeddingDictionaryJson);
+        const { pretrainedClassifier, pretrainedNer, pretrainedEmbedding } = await this.downloadsTrainedModel(this.state.selectedModel);
         const logger = this.logger;
-        const pipeline = new AidaPipeline({ datasetParams, dictionary, logger, pretrainedClassifier, pretrainedNer });
+        const pipeline = new AidaPipeline({
+            datasetParams,
+            logger,
+            ngramToIdDictionary,
+            pretrainedClassifier,
+            pretrainedEmbedding,
+            pretrainedNer
+        });
         this.pipeline = pipeline;
         this.setState({ modelsLoaded: true });
         return pipeline;

@@ -18,7 +18,7 @@ const Header = styled.header`
 export default function LandingHeader() {
     return (
         <Header key="landing-header">
-            <Logo style={{ lineHeight: '64px' }} className="animated">
+            <Logo style={{ lineHeight: '64px' }} className="static">
                 <Link to="/">{`< Aida />`}</Link>
             </Logo>
             <div className="github-link">

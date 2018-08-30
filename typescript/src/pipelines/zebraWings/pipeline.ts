@@ -25,18 +25,17 @@ const defaultPipelineDefinition: types.IPipelineDefinition = {
             numFilters: 128
         },
         default: {
-            batchSize: 120,
+            batchSize: 70,
             drop: 0.5,
             embeddingDimensions: 300,
             lossThresholdToStopTraining: 0,
-            maxNgrams: 20,
+            maxNgrams: 25,
             trainingValidationSplit: 0.3
         },
         ner: {
             epochs: 5,
             lowConfidenceThreshold: 0.2,
-            maxCharsPerWord: 20,
-            numFilters: [256, 128]
+            numFilters: [128, 128]
         }
     }
 };
@@ -51,13 +50,15 @@ export class AidaPipeline {
     private tokenizer: types.IAidaTokenizer;
 
     constructor(cfg: {
-        dictionary: types.IPretrainedDictionary;
         datasetParams: types.IDatasetParams;
         logger: types.IPipelineModelLogger;
+        ngramToIdDictionary: { [key: string]: number };
         trainStatsHandler?: types.ITrainStatsHandler;
         pipelineDefinition?: types.IPipelineDefinition;
         pretrainedClassifier?: tf.Model;
         pretrainedNer?: tf.Model;
+        pretrainedEmbedding?: tf.Model;
+        pretrainedNGramVectors?: types.PretrainedDict;
     }) {
         if (cfg.pipelineDefinition) {
             this.pipelineDefinition = cfg.pipelineDefinition;
@@ -66,12 +67,13 @@ export class AidaPipeline {
         this.logger = cfg.logger;
         this.tokenizer = getTokenizer(this.datasetParams.language);
         this.embeddingsModel = new EmbeddingsModel(
-            cfg.dictionary,
-            this.pipelineDefinition.config.ner.maxCharsPerWord,
+            cfg.ngramToIdDictionary,
             cfg.datasetParams.maxWordsPerSentence,
             this.pipelineDefinition.config.default.maxNgrams,
             this.pipelineDefinition.config.default.embeddingDimensions,
-            this.tokenizer
+            this.tokenizer,
+            cfg.pretrainedEmbedding,
+            cfg.pretrainedNGramVectors
         );
         const classificationCfg = Object.assign({}, this.pipelineDefinition.config.default, this.pipelineDefinition.config.classification);
         let classificationTrainStatsHandler;
@@ -122,12 +124,11 @@ export class AidaPipeline {
         return { classification, ner };
     };
 
-    public save = async (cfg: { classificationPath: string; nerPath: string }) => {
+    public save = async (cfg: { classificationPath: string; nerPath: string; embeddingPath: string }) => {
         this.logger.log('SAVING PIPELINE MODELS!');
         this.logger.log('==================================================================================================');
-        const cm = this.classificationModel.tfModel();
-        const nm = this.nerModel.tfModel();
-        await cm.save(cfg.classificationPath);
-        await nm.save(cfg.nerPath);
+        await this.classificationModel.tfModel().save(cfg.classificationPath);
+        await this.nerModel.tfModel().save(cfg.nerPath);
+        await this.embeddingsModel.tfModel().save(cfg.embeddingPath);
     };
 }

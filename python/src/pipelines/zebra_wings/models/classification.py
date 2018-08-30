@@ -126,7 +126,7 @@ class ClassificationModel:
             m.fit(
                 x=x,
                 y=y,
-                batch_size=self.__config['batchSize'],
+                # batch_size=self.__config['batchSize'],
                 shuffle=True,
                 epochs=self.__config['epochs'],
                 verbose=0,
@@ -151,7 +151,7 @@ class ClassificationModel:
 
     def test(self, test_examples, results_handler=None):
         chunks = du.chunks(
-            test_examples['testX'], 100, test_examples['testY'])
+            test_examples['testX'], self.__config['batchSize'], test_examples['testY'])
         handler = results_handler if results_handler != None else self.__default_results_logger
         stats = {'correct': 0, 'wrong': 0, 'lowConfidence': 0}
         for t_chunk in chunks:

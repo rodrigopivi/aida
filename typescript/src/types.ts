@@ -48,8 +48,7 @@ export interface ITestingParams {
 export type IDictionariesFromDataset = IDatasetParams & ITrainingParams & ITestingParams;
 export type PretrainedDict = Map<string, Float32Array>;
 export interface IPretrainedDictionary {
-    ID_TO_WORD_MAP: any;
-    WORD_TO_ID_MAP: any;
+    NGRAM_TO_ID_MAP: { [key: string]: number };
     PRETRAINED: PretrainedDict;
 }
 export type IDictJsonItem = [string, Float32Array];
@@ -146,7 +145,6 @@ export interface IClassificationModelParams {
 export interface INerModelParams {
     epochs: number;
     lowConfidenceThreshold: number;
-    maxCharsPerWord: number;
     numFilters: [number, number];
 }
 export interface IPipelineDefinition {

@@ -6,31 +6,37 @@ import src.pipelines.zebra_wings.embeddings.combine_ngrams_layer as ctg
 
 class EmbeddingsModel:
     @staticmethod
-    def setup_model(dictionary, max_words, max_ngrams, embedding_dimensions):
+    def setup_model(pretrained_ngram_vectors, max_words, max_ngrams, embedding_dimensions):
         model = keras.models.Sequential()
         embed = keras.layers.Embedding(
-            len(dictionary['PRETRAINED']),
+            len(pretrained_ngram_vectors),
             embedding_dimensions,
             mask_zero=True,
             input_length=max_ngrams,
             trainable=False,
-            embeddings_initializer=pei.PreSavedEmbeddingsInitializer(
-                dictionary['PRETRAINED'], max_words, max_ngrams, embedding_dimensions
-            )
+            embeddings_initializer=pei.PreSavedEmbeddingsInitializer(pretrained_ngram_vectors)
         )
         model.add(keras.layers.TimeDistributed(
             embed, input_shape=(max_words, max_ngrams)))
         model.add(ctg.CombineNgramsLayer())
         return model
 
-    def __init__(self, dictionary, max_chars_per_word, max_words, max_ngrams, embedding_dimensions, tokenizer):
-        self.__dictionary = dictionary
-        self.__max_chars_per_word = max_chars_per_word
+    def __init__(
+        self,
+        ngram_to_id_dictionary,
+        max_words, max_ngrams,
+        embedding_dimensions,
+        tokenizer,
+        pretrained_embedding_model=None,
+        pretrained_ngram_vectors=None
+    ):
+        self.__ngram_to_id_dictionary = ngram_to_id_dictionary
+        # self.__max_chars_per_word = max_chars_per_word
         self.__max_words = max_words
         self.__max_ngrams = max_ngrams
         self.__embedding_dimensions = embedding_dimensions
-        self.__model = EmbeddingsModel.setup_model(
-            self.__dictionary, self.__max_words, self.__max_ngrams, self.__embedding_dimensions,
+        self.__model = pretrained_embedding_model if pretrained_embedding_model != None else EmbeddingsModel.setup_model(
+            pretrained_ngram_vectors, self.__max_words, self.__max_ngrams, self.__embedding_dimensions,
         )
         self.tokenizer = tokenizer
 
@@ -45,24 +51,29 @@ class EmbeddingsModel:
         return entry_model.predict_on_batch(sentences_tensor)
 
     def dictionary(self):
-        return self.__dictionary
+        return self.__ngram_to_id_dictionary
 
-    def sentences_to_character_vectors(self, sentences):
-        WORDS_TO_VECTORS_MAP = self.__dictionary['PRETRAINED']
+    def embed_by_word_characters(self, sentences):
+        _input = keras.layers.Input(shape=(self.__max_words, self.__max_ngrams),)
+        embedded = self.__model(_input)
+        entry_model = keras.models.Model(inputs=_input, outputs=embedded)
+        sentences_tensor = self.sentence_to_char_ids(sentences)
+        return entry_model.predict_on_batch(sentences_tensor)
+
+    def sentence_to_char_ids(self, sentences):
         sentences_splitted_by_words = list(
             map(lambda s: self.tokenizer.split_sentence_to_words(s), sentences))
-        buffer = np.zeros((len(sentences), self.__max_words,
-                           self.__max_chars_per_word * self.__embedding_dimensions), dtype=np.float32)
-        for sentence_index, s in enumerate(sentences_splitted_by_words):
-            for widx, w in enumerate(s):
-                for lidx, letter in enumerate(list(w)):
-                    if (lidx >= self.__max_chars_per_word):
-                        break
-                    key = letter if letter in WORDS_TO_VECTORS_MAP else self.tokenizer.UNKNOWN_NGRAM_KEY
-                    vec = WORDS_TO_VECTORS_MAP[key]
-                    for i, x in enumerate(vec):
-                        buffer[sentence_index, widx, lidx *
-                               self.__embedding_dimensions + i] = x
+        buffer = np.zeros((len(sentences), self.__max_words, self.__max_ngrams), dtype=np.int32)
+        for si, sentence in enumerate(sentences_splitted_by_words):
+            for wi, word in enumerate(sentence):
+
+                for li, letter in enumerate(list(word)):
+                    if (li >= self.__max_ngrams):
+                        break    
+                    if letter in self.__ngram_to_id_dictionary:
+                        buffer[si, wi, li] = self.__ngram_to_id_dictionary[letter]
+                    else:
+                        buffer[si, wi, li] = 0
         return buffer
 
     def sentence_to_word_ids(self, sentences):
@@ -72,8 +83,8 @@ class EmbeddingsModel:
                            self.__max_ngrams), dtype=np.int32)
         for si, sentence in enumerate(sentences_splitted_by_words):
             for wi, word in enumerate(sentence):
-                if word in self.__dictionary['WORD_TO_ID_MAP']:
-                    buffer[si, wi, 0] = self.__dictionary['WORD_TO_ID_MAP'][word]
+                if word in self.__ngram_to_id_dictionary:
+                    buffer[si, wi, 0] = self.__ngram_to_id_dictionary[word]
                 else:
                     grams = self.generate_word_ids_from_ngrams(word)
                     for gi, gram in enumerate(grams):
@@ -87,8 +98,8 @@ class EmbeddingsModel:
         vec_ids = []
         add_to_vecs_if_not_present = (
             lambda ngram: (
-                False if ngram not in self.__dictionary['WORD_TO_ID_MAP']
-                else vec_ids.append(self.__dictionary['WORD_TO_ID_MAP'][ngram]) == None and True
+                False if ngram not in self.__ngram_to_id_dictionary
+                else vec_ids.append(self.__ngram_to_id_dictionary[ngram]) == None and True
             )
         )
         # first try using ngrams to reconstruct the word vector

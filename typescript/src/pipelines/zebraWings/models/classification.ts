@@ -151,7 +151,7 @@ export default class ClassificationModel extends types.PipelineModel implements 
             const dataLabels = tf.tensor1d(trainYChunks[index], 'int32');
             const hotEncodedLabels = tf.oneHot(dataLabels, this.datasetParams.intents.length);
             await m.fit(embeddedSentences, hotEncodedLabels, {
-                batchSize: this.config.batchSize,
+                // batchSize: this.config.batchSize,
                 callbacks: { onBatchEnd: tf.nextFrame },
                 epochs: this.config.epochs,
                 shuffle: true,
@@ -198,8 +198,8 @@ export default class ClassificationModel extends types.PipelineModel implements 
     ): Promise<types.IPredictionStats> => {
         const handler = resultsHandler ? resultsHandler : this.defaultResultsLogger;
         const stats: types.IPredictionStats = { correct: 0, wrong: 0, lowConfidence: 0 };
-        const x = chunk(testExamples.testX, 100);
-        const y = chunk(testExamples.testY, 100);
+        const x = chunk(testExamples.testX, this.config.batchSize);
+        const y = chunk(testExamples.testY, this.config.batchSize);
         for (const [i, sentences] of x.entries()) {
             const predictions = this.predict(sentences);
             handler(sentences, y[i], predictions, stats);

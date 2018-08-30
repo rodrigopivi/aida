@@ -3,11 +3,11 @@ import axios from 'axios';
 import { withPrefix } from 'gatsby-link';
 import * as React from 'react';
 import * as types from '../../src/types';
-import { buildDictionary } from '../../src/utils/dictionaryUtils';
 import TrainingDashboard from './TrainingDashboard';
 
 interface ITrainExampleState {
-    datasetDictionary: types.IPretrainedDictionary | null;
+    ngramToIdDictionary: types.IPretrainedDictionary['NGRAM_TO_ID_MAP'] | null;
+    pretrainedNGramVectors: types.IPretrainedDictionary['PRETRAINED'] | null;
     datasetParams: types.IDatasetParams | null;
     datasetTest: types.ITestingParams | null;
     datasetTraining: types.ITrainingParams | null;
@@ -18,24 +18,40 @@ interface ITrainExampleState {
 
 export default class TrainExample extends React.Component<{}, ITrainExampleState> {
     public state: ITrainExampleState = {
-        datasetDictionary: null,
         datasetParams: null,
         datasetTest: null,
         datasetTraining: null,
         downloadProgress: 0,
         embeddingsAndTrainingDatasetLoaded: false,
-        isDownloading: false
+        isDownloading: false,
+        ngramToIdDictionary: null,
+        pretrainedNGramVectors: null
     };
 
     public render() {
-        const { embeddingsAndTrainingDatasetLoaded, datasetParams, datasetTraining, datasetTest, datasetDictionary } = this.state;
-        if (embeddingsAndTrainingDatasetLoaded && datasetParams && datasetTraining && datasetTest && datasetDictionary) {
+        const {
+            embeddingsAndTrainingDatasetLoaded,
+            datasetParams,
+            datasetTraining,
+            datasetTest,
+            ngramToIdDictionary,
+            pretrainedNGramVectors
+        } = this.state;
+        if (
+            embeddingsAndTrainingDatasetLoaded &&
+            datasetParams &&
+            datasetTraining &&
+            datasetTest &&
+            ngramToIdDictionary &&
+            pretrainedNGramVectors
+        ) {
             return (
                 <TrainingDashboard
                     datasetParams={datasetParams}
                     trainDataset={datasetTraining}
                     testDataset={datasetTest}
-                    dictionary={datasetDictionary}
+                    ngramToIdDictionary={ngramToIdDictionary}
+                    pretrainedNGramVectors={pretrainedNGramVectors}
                 />
             );
         }
@@ -130,23 +146,25 @@ export default class TrainExample extends React.Component<{}, ITrainExampleState
     private trainTestAndSaveModels = async () => {
         const files = [
             withPrefix('/models/dictionary.json'),
+            withPrefix('/models/ngram_to_id_dictionary.json'),
             withPrefix('/models/dataset_params.json'),
             withPrefix('/models/dataset_training.json'),
             withPrefix('/models/dataset_testing.json')
         ];
         const jsonFiles = await this.downloadFiles(files);
-        const embeddingDictionaryJson = jsonFiles[0].data;
-        const datasetParams = jsonFiles[1].data;
-        const datasetTraining = jsonFiles[2].data;
-        const datasetTest = jsonFiles[3].data;
-        const datasetDictionary = buildDictionary(embeddingDictionaryJson);
+        const pretrainedNGramVectors = new Map<string, Float32Array>(jsonFiles[0].data);
+        const ngramToIdDictionary = jsonFiles[1].data;
+        const datasetParams = jsonFiles[2].data;
+        const datasetTraining = jsonFiles[3].data;
+        const datasetTest = jsonFiles[4].data;
         await this.timeoutInMs(200); // give some time for the state update after the model setup (before the gpu blocks)
         this.setState({
-            datasetDictionary,
             datasetParams,
             datasetTest,
             datasetTraining,
-            embeddingsAndTrainingDatasetLoaded: true
+            embeddingsAndTrainingDatasetLoaded: true,
+            ngramToIdDictionary,
+            pretrainedNGramVectors
         });
     };
 }

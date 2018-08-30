@@ -4,16 +4,19 @@ import { CombineNgramsLayer } from './CombineNgramsLayer';
 import { PreSavedEmbeddingsInitializer } from './PreSavedEmbeddingsInitializer';
 
 export class EmbeddingsModel {
-    public static setupModel(dict: types.IPretrainedDictionary, maxWords: number, maxNgrams: number, embeddingDimensions: number) {
+    public static setupModel(
+        pretrainedNGramVectors: types.PretrainedDict,
+        maxWords: number,
+        maxNgrams: number,
+        embeddingDimensions: number
+    ) {
         const model = tf.sequential();
         const embedLayer = tf.layers.embedding({
             embeddingsInitializer: new PreSavedEmbeddingsInitializer({
-                dict: dict.PRETRAINED,
                 embeddingDimensions,
-                maxNgrams,
-                maxWords
+                pretrainedNGramVectors
             }),
-            inputDim: dict.PRETRAINED.size,
+            inputDim: pretrainedNGramVectors.size,
             inputLength: [maxNgrams],
             maskZero: true,
             outputDim: embeddingDimensions,
@@ -26,30 +29,34 @@ export class EmbeddingsModel {
 
     public tokenizer: types.IAidaTokenizer;
 
-    private dict: types.IPretrainedDictionary;
-    private maxCharsPerWord: number;
+    private ngramToIdDictionary: { [key: string]: number };
     private maxWords: number;
     private maxNgrams: number;
     private embeddingDimensions: number;
     private model: tf.Model;
 
     constructor(
-        dict: types.IPretrainedDictionary,
-        maxCharsPerWord: number,
+        ngramToIdDictionary: { [key: string]: number },
         maxWords: number,
         maxNgrams: number,
         embeddingDimensions: number,
-        tokenizer: types.IAidaTokenizer
+        tokenizer: types.IAidaTokenizer,
+        pretrainedEmbeddingModel?: tf.Model,
+        pretrainedNGramVectors?: types.PretrainedDict
     ) {
-        this.dict = dict;
-        this.maxCharsPerWord = maxCharsPerWord;
+        this.ngramToIdDictionary = ngramToIdDictionary;
         this.maxWords = maxWords;
         this.maxNgrams = maxNgrams;
         this.embeddingDimensions = embeddingDimensions;
-        this.model = EmbeddingsModel.setupModel(this.dict, this.maxWords, this.maxNgrams, this.embeddingDimensions);
+        this.model = pretrainedEmbeddingModel
+            ? pretrainedEmbeddingModel
+            : EmbeddingsModel.setupModel(pretrainedNGramVectors || new Map(), this.maxWords, this.maxNgrams, this.embeddingDimensions);
         this.tokenizer = tokenizer;
     }
 
+    public tfModel = () => this.model;
+
+    // Embeds by word bigrams
     public embed = (sentences: string[]) => {
         return tf.tidy(() => {
             const maxWords = this.maxWords;
@@ -64,29 +71,37 @@ export class EmbeddingsModel {
         });
     };
 
-    public dictionary = () => this.dict;
+    public dictionary = () => this.ngramToIdDictionary;
 
-    public sentencesToCharacterVectors = (sentences: string[]): tf.Tensor<tf.Rank.R3> => {
+    public embedByWordCharacters = (sentences: string[]) => {
         return tf.tidy(() => {
-            const WORDS_TO_VECTORS_MAP = this.dict.PRETRAINED;
+            const maxWords = this.maxWords;
+            const maxNgrams = this.maxNgrams;
+            const input = tf.layers.input({ shape: [maxWords, maxNgrams], dtype: 'int32' });
+            const embedded = this.model.apply(input) as tf.SymbolicTensor;
+            const entryModel = tf.model({ inputs: input, outputs: embedded });
+            const sentencesTensor = this.sentencesToCharIds(sentences);
+            const output = entryModel.predictOnBatch(sentencesTensor) as tf.Tensor<tf.Rank.R3>;
+            sentencesTensor.dispose();
+            return output;
+        });
+    };
+
+    private sentencesToCharIds = (sentences: string[]) => {
+        return tf.tidy(() => {
             const sentencesSplittedByWords = sentences.map(s => this.tokenizer.splitSentenceToWords(s));
-            const buffer: tf.TensorBuffer<tf.Rank.R3> = tf.buffer(
-                [sentences.length, this.maxWords, this.maxCharsPerWord * this.embeddingDimensions],
-                'float32'
-            );
+            const buffer = tf.buffer([sentences.length, this.maxWords, this.maxNgrams], 'int32') as tf.TensorBuffer<tf.Rank.R3>;
             sentencesSplittedByWords.forEach((s, sentenceIndex) => {
-                s.forEach((w: string, widx: number) => {
+                s.forEach((w: string, wordIndex: number) => {
                     w.split('').forEach((letter, lidx) => {
-                        let vec = WORDS_TO_VECTORS_MAP.get(letter);
-                        if (!vec) {
-                            vec = WORDS_TO_VECTORS_MAP.get(this.tokenizer.UNKNOWN_NGRAM_KEY);
-                        }
-                        if (!vec) {
+                        if (lidx >= this.maxNgrams) {
                             return;
                         }
-                        vec.forEach((x: number, i: number) => {
-                            buffer.set(x, sentenceIndex, widx, lidx * this.embeddingDimensions + i);
-                        });
+                        if (this.ngramToIdDictionary[letter] !== undefined) {
+                            buffer.set(this.ngramToIdDictionary[letter], sentenceIndex, wordIndex, lidx);
+                        } else {
+                            buffer.set(0, sentenceIndex, wordIndex, lidx);
+                        }
                     });
                 });
             });
@@ -100,9 +115,9 @@ export class EmbeddingsModel {
             const buffer = tf.buffer([sentences.length, this.maxWords, this.maxNgrams], 'int32') as tf.TensorBuffer<tf.Rank.R3>;
             sentencesSplittedByWords.forEach((s, sentenceIndex) => {
                 s.forEach((w: string, wordIndex: number) => {
-                    if (this.dict.WORD_TO_ID_MAP[w] !== undefined) {
+                    if (this.ngramToIdDictionary[w] !== undefined) {
                         // use the word dictionary
-                        buffer.set(this.dict.WORD_TO_ID_MAP[w], sentenceIndex, wordIndex, 0);
+                        buffer.set(this.ngramToIdDictionary[w], sentenceIndex, wordIndex, 0);
                     } else if (w.length) {
                         this.generateWordIdsFromNGrams(w).forEach((gram, gramIndex) => {
                             if (gramIndex > this.maxNgrams) {
@@ -122,10 +137,10 @@ export class EmbeddingsModel {
     private generateWordIdsFromNGrams = (word: string): number[] => {
         let vecIds: number[] = [];
         const addToVecsIfNotUndefined = (k: string) => {
-            if (this.dict.WORD_TO_ID_MAP[k] === undefined) {
+            if (this.ngramToIdDictionary[k] === undefined) {
                 return false;
             }
-            vecIds.push(this.dict.WORD_TO_ID_MAP[k]);
+            vecIds.push(this.ngramToIdDictionary[k]);
             return true;
         };
         // first try using ngrams to reconstruct the word vector

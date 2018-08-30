@@ -24,18 +24,17 @@ default_pipeline_definition = {
             'numFilters': 128,
         },
         'default': {
-            'batchSize': 180,
+            'batchSize': 70,
             'drop': 0.5,
             'embeddingDimensions': 300,
             'lossThresholdToStopTraining': 0,
-            'maxNgrams': 20,
+            'maxNgrams': 25,
             'trainingValidationSplit': 0.3,
         },
         'ner': {
             'epochs': 5,
             'lowConfidenceThreshold': 0.2,
-            'maxCharsPerWord': 20,
-            'numFilters': [256, 128],
+            'numFilters': [128, 128],
         },
     },
 }
@@ -43,25 +42,31 @@ default_pipeline_definition = {
 
 class AidaPipeline:
     def __init__(
-        self, dictionary, dataset_params, logger,
-        pipeline_definition=default_pipeline_definition,
+        self,
+        dataset_params,
+        logger,
+        ngram_to_id_dictionary,
         pretrained_classifier=None,
         pretrained_ner=None,
+        pretrained_embedding=None,
+        pretrained_ngram_vectors=None,
+        pipeline_definition=default_pipeline_definition,
     ):
-        self.__embeddingsModel = None
+        self.__embeddings_model = None
         self.__dataset_params = dataset_params
         self.__logger = logger
         self.__pipeline_definition = pipeline_definition
         self.__classification_model = pretrained_classifier
         self.__ner_model = pretrained_ner
         self.__tokenizer = get_tokenizer(self.__dataset_params['language'])
-        self.__embeddingsModel = em.EmbeddingsModel(
-            dictionary,
-            pipeline_definition['config']['ner']['maxCharsPerWord'],
+        self.__embeddings_model = em.EmbeddingsModel(
+            ngram_to_id_dictionary,
             dataset_params['maxWordsPerSentence'],
             pipeline_definition['config']['default']['maxNgrams'],
             pipeline_definition['config']['default']['embeddingDimensions'],
             self.__tokenizer,
+            pretrained_embedding,
+            pretrained_ngram_vectors,
         )
         classification_cfg = dict()
         classification_cfg.update(pipeline_definition['config']['default'])
@@ -70,7 +75,7 @@ class AidaPipeline:
         self.__classification_model = cm.ClassificationModel(
             classification_cfg,
             dataset_params,
-            self.__embeddingsModel,
+            self.__embeddings_model,
             logger,
             pretrained_classifier,
         )
@@ -80,13 +85,13 @@ class AidaPipeline:
         self.__ner_model = nm.NerModel(
             ner_cfg,
             dataset_params,
-            self.__embeddingsModel,
+            self.__embeddings_model,
             logger,
             pretrained_ner,
         )
 
     def models(self):
-        return {'classification': self.__classification_model, 'ner': self.__ner_model}
+        return {'classification': self.__classification_model, 'ner': self.__ner_model, 'embedding': self.__embeddings_model}
 
     def train(self, train_dataset):
         self.__classification_model.train(train_dataset)
@@ -106,3 +111,4 @@ class AidaPipeline:
         self.__classification_model.keras_model().save(
             cfg['classificationPath'])
         self.__ner_model.keras_model().save(cfg['nerPath'])
+        self.__embeddings_model.keras_model().save(cfg['embeddingPath'])

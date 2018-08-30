@@ -6,7 +6,7 @@ import { EmbeddingsModel } from '../embeddings/EmbeddingsModel';
 export default class NerModel extends types.PipelineModel implements types.IPipelineModel {
     private static setup(config: types.INerModelParams & types.IDefaultModelParams, datasetParams: types.IDatasetParams) {
         const maxWords = datasetParams.maxWordsPerSentence;
-        const { drop, embeddingDimensions, maxCharsPerWord, numFilters } = config;
+        const { drop, embeddingDimensions, numFilters } = config;
         const numSlotTypes = Object.keys(datasetParams.slotsToId).length;
         const LEARNING_RATE = 0.0066; // use 1e-4 as default as alternative starting point
         const ADAM_BETA_1 = 0.0025;
@@ -15,7 +15,7 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
         const classLabelInput = tf.input({ dtype: 'float32', shape: [datasetParams.intents.length] });
         const classLabelRepeated = tf.layers.repeatVector({ n: maxWords }).apply(classLabelInput) as tf.SymbolicTensor;
 
-        // WORD LEVEL EMBEDDINGS
+        // WORD-NGRAMS LEVEL EMBEDDINGS
         const embeddedSentencesInput = tf.input({ dtype: 'float32', shape: [maxWords, embeddingDimensions] });
         const convLayer1 = tf.layers
             .conv1d({
@@ -36,16 +36,15 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
                 padding: 'valid'
             })
             .apply(convLayer1) as tf.SymbolicTensor;
-        // CHARACTER LEVEL EMBEDDINGS
+        // WORD-CHARACTER LEVEL EMBEDDINGS
         const embeddedCharactersInput = tf.input({
             dtype: 'float32',
-            shape: [maxWords, maxCharsPerWord * embeddingDimensions]
+            shape: [maxWords, embeddingDimensions]
         });
         const convCLayer1 = tf.layers
             .conv1d({
                 activation: 'relu',
                 filters: numFilters[1],
-                inputShape: [maxWords, maxCharsPerWord * embeddingDimensions],
                 kernelInitializer: 'randomNormal',
                 kernelSize: 1,
                 padding: 'valid'
@@ -112,7 +111,7 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
             const { maxWordsPerSentence: maxWords, slotsToId } = this.datasetParams;
             const slotTypesLength = Object.keys(slotsToId).length;
             const embeddedSentences = this.embeddingsModel.embed(sentences);
-            const embeddedCharacters = this.embeddingsModel.sentencesToCharacterVectors(sentences);
+            const embeddedCharacters = this.embeddingsModel.embedByWordCharacters(sentences);
             const encodedIntent = classificationPred.map(p => {
                 const intentEncoded = new Array(this.datasetParams.intents.length).fill(0) as number[];
                 const idx = this.datasetParams.intents.indexOf(p.intent);
@@ -228,7 +227,7 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
                 tf.oneHot(tf.tensor1d(trainYChunks[index], 'int32'), this.datasetParams.intents.length).asType('float32')
             );
             const embeddedSentenceWords = this.embeddingsModel.embed(xChunk);
-            const embeddedSentenceWordChars = this.embeddingsModel.sentencesToCharacterVectors(xChunk);
+            const embeddedSentenceWordChars = this.embeddingsModel.embedByWordCharacters(xChunk);
             // convert sentence-word-slots from the highest index format like [0,0,0,0,4,4,0,0,3,3] for a sentence
             // to one hot encoded sentences with correct maxWords and batch sizes tensor sizes
             const slotTags: tf.Tensor3D = tf.tidy(() => {
@@ -246,6 +245,7 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
                 return stack;
             });
             await this.model.fit([intentLabels, embeddedSentenceWords, embeddedSentenceWordChars], slotTags, {
+                // batchSize: this.config.batchSize,
                 callbacks: { onBatchEnd: tf.nextFrame },
                 epochs,
                 shuffle: true,
@@ -295,9 +295,9 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
     ): Promise<types.IPredictionStats> => {
         const handler = resultsHandler ? resultsHandler : this.defaultResultsLogger;
         const stats: types.IPredictionStats = { correct: 0, wrong: 0 };
-        const testX = chunk(testExamples.testX, 100);
-        const testY = chunk(testExamples.testY, 100);
-        const testY2 = chunk(testExamples.testY2, 100);
+        const testX = chunk(testExamples.testX, this.config.batchSize);
+        const testY = chunk(testExamples.testY, this.config.batchSize);
+        const testY2 = chunk(testExamples.testY2, this.config.batchSize);
         for (const [i, sentences] of testX.entries()) {
             const classifications = testY[i];
             const encodedIntent = sentences.map(

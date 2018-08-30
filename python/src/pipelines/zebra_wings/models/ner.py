@@ -14,7 +14,6 @@ class NerModel:
         max_words = dataset_params["maxWordsPerSentence"]
         drop = config["drop"]
         embedding_dimensions = config["embeddingDimensions"]
-        max_chars = config["maxCharsPerWord"]
         num_filters = config["numFilters"]
         num_slot_types = len(dataset_params["slotsToId"].keys())
         LEARNING_RATE = 0.0066  # use 1e-4 as default as alternative starting point
@@ -47,11 +46,10 @@ class NerModel:
         )(conv_layer_1)
         # CHARACTER LEVEL EMBEDDINGS
         embedded_characters_input = keras.layers.Input(
-            shape=(max_words, max_chars * embedding_dimensions), name="embedded_word_characters")
+            shape=(max_words, embedding_dimensions), name="embedded_word_characters")
         conv_c_layer_1 = keras.layers.Conv1D(
             num_filters[1],
             1,
-            input_shape=(max_words, max_chars * embedding_dimensions),
             kernel_initializer='random_normal',
             padding='valid',
             activation='relu',
@@ -101,8 +99,8 @@ class NerModel:
     def raw_prediction(self, sentences, classification_pred):
         intents = self.__dataset_params['intents']
         embedded_sentences = self.__embeddings_model.embed(sentences)
-        embedded_characters = self.__embeddings_model.sentences_to_character_vectors(
-            sentences)
+        # embedded_characters = self.__embeddings_model.sentences_to_character_vectors(sentences)
+        embedded_characters = self.__embeddings_model.embed_by_word_characters(sentences)
         class_label = []
         for p in classification_pred:
             intent_encoded = np.zeros(len(intents))
@@ -198,7 +196,7 @@ class NerModel:
             self.__config['batchSize'],
             train_dataset['trainY'],
             train_dataset['trainY2'])
-        self.__logger(f'Start training NER model!')
+        self.__logger('Start training NER model!')
         enough_accuracy_reached = False
         m = self.__model
         num_slot_types = len(self.__dataset_params["slotsToId"].keys())
@@ -214,8 +212,8 @@ class NerModel:
                 train_y_chunks, dtype=np.int32), len(self.__dataset_params['intents']))
             embedded_sentence_words = self.__embeddings_model.embed(
                 train_x_chunks)
-            embedded_sentenc_word_chars = self.__embeddings_model.sentences_to_character_vectors(
-                train_x_chunks)
+            embedded_sentence_word_chars = self.__embeddings_model.embed_by_word_characters(train_x_chunks)
+            # embedded_sentence_word_chars = self.__embeddings_model.sentences_to_character_vectors(train_x_chunks)
             y2_sentences = []
             for words_slot_id in train_y2_chunks:
                 slot_ids = np.array(words_slot_id, dtype=np.int32)
@@ -228,8 +226,7 @@ class NerModel:
                     padded_slot_ids, num_slot_types))
             slot_tags = np.stack(y2_sentences)
             m.fit(
-                x=[intent_labels, embedded_sentence_words,
-                    embedded_sentenc_word_chars],
+                x=[intent_labels, embedded_sentence_words, embedded_sentence_word_chars],
                 y=slot_tags,
                 shuffle=True,
                 # batch_size=self.__config['batchSize'], # IMPORTANT: adding batch size here makes the optimization bad
@@ -258,7 +255,7 @@ class NerModel:
         handler = results_handler if results_handler != None else self.__default_results_logger
         chunks = du.chunks(
             test_examples['testX'],
-            100,
+            self.__config['batchSize'],
             test_examples['testY'],
             test_examples['testY2'])
         stats = {'correct': 0, 'wrong': 0}

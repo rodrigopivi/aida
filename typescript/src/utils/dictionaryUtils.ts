@@ -87,14 +87,12 @@ export function dictionariesFromDataset(
 
 export function buildDictionary(dictJson: IDictJsonItem[]): IPretrainedDictionary {
     const dictionaryCache = {
-        ID_TO_WORD_MAP: {},
-        PRETRAINED: new Map(), // the actual pretrained word to vectors map
-        WORD_TO_ID_MAP: {}
+        NGRAM_TO_ID_MAP: {},
+        PRETRAINED: new Map() // the actual pretrained word to vectors map
     } as IPretrainedDictionary;
     dictionaryCache.PRETRAINED = new Map(dictJson);
     [...dictionaryCache.PRETRAINED.keys()].forEach((word, id) => {
-        dictionaryCache.ID_TO_WORD_MAP[id] = word;
-        dictionaryCache.WORD_TO_ID_MAP[word] = id;
+        dictionaryCache.NGRAM_TO_ID_MAP[word] = id;
     });
     return dictionaryCache;
 }

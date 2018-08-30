@@ -4,6 +4,7 @@
         "module": "commonjs",
         "strict": true,
         "jsx": "react",
+        "outDir": "./dist",
         "types": ["node"]
     },
     "exclude": ["./node_modules"]

@@ -4,6 +4,8 @@ import { l2Normalize } from '@tensorflow/tfjs-layers/dist/losses';
 // given an imput composed of max_ngrams x 300d this layer will sum
 // and normalize all the max_ngrams to get a unique 300d vector representation
 export class CombineNgramsLayer extends tf.layers.Layer {
+    public static className = 'CombineNgramsLayer';
+    public className = CombineNgramsLayer.className;
     // The output shape removes the ngram dimension
     public computeOutputShape(inputShape: number[]) {
         return [inputShape[0], inputShape[1], inputShape[inputShape.length - 1]];
@@ -17,7 +19,6 @@ export class CombineNgramsLayer extends tf.layers.Layer {
             return output;
         });
     }
-    public getClassName() {
-        return 'CombineNgramsLayer';
-    }
 }
+
+tf.serialization.SerializationMap.register(CombineNgramsLayer);

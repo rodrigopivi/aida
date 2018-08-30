@@ -32,7 +32,8 @@ interface ITrainingDashboardProps {
     datasetParams: types.IDatasetParams;
     trainDataset: types.ITrainingParams;
     testDataset: types.ITestingParams;
-    dictionary: types.IPretrainedDictionary;
+    ngramToIdDictionary: types.IPretrainedDictionary['NGRAM_TO_ID_MAP'];
+    pretrainedNGramVectors: types.IPretrainedDictionary['PRETRAINED'];
 }
 
 interface ITrainingDashboardState {
@@ -164,8 +165,9 @@ export default class TrainingDashboard extends React.Component<ITrainingDashboar
         };
         this.pipeline = new AidaPipeline({
             datasetParams: this.props.datasetParams,
-            dictionary: this.props.dictionary,
             logger,
+            ngramToIdDictionary: this.props.ngramToIdDictionary,
+            pretrainedNGramVectors: this.props.pretrainedNGramVectors,
             trainStatsHandler: this.trainStatsHandler()
         });
         if (!this.pipeline) {
@@ -179,7 +181,11 @@ export default class TrainingDashboard extends React.Component<ITrainingDashboar
         logger.log('Test dataset stats:');
         logger.log(JSON.stringify(stats, null, 2));
         logger.log('==================================================================================================');
-        await this.pipeline.save({ classificationPath: 'downloads://classification', nerPath: 'downloads://ner' });
+        await this.pipeline.save({
+            classificationPath: 'downloads://classification',
+            embeddingPath: 'downloads://embedding',
+            nerPath: 'downloads://ner'
+        });
         this.setState({ plot: true });
     };
 }

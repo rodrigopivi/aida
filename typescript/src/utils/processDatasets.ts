@@ -4,7 +4,7 @@ import * as path from 'path';
 import englishTokenizer from '../languages/en/EnglishTokenizer';
 import spanishTokenizer from '../languages/es/SpanishTokenizer';
 import { IAidaPipelineConfig, IDatasetParams, ITestingParams, ITrainingParams } from '../types';
-import { dictionariesFromDataset } from './dictionaryUtils';
+import { buildDictionary, dictionariesFromDataset } from './dictionaryUtils';
 
 function getTokenizerAndDictionaryForLanguage(language: 'en' | 'es') {
     const lang = language ? language.toLowerCase() : language;
@@ -73,6 +73,9 @@ const datasetGeneration = async (configFile: string) => {
         } as ITestingParams)
     );
     await copyFile(dictionary, path.join(process.cwd(), config.dataset.modelsOutput, 'dictionary.json'));
+    const dictionaryData = JSON.parse(fs.readFileSync(path.join(process.cwd(), config.dataset.modelsOutput, 'dictionary.json'), 'utf8'));
+    const { NGRAM_TO_ID_MAP } = buildDictionary(dictionaryData);
+    fs.writeFileSync(path.join(process.cwd(), config.dataset.modelsOutput, 'ngram_to_id_dictionary.json'), JSON.stringify(NGRAM_TO_ID_MAP));
     process.stdout.write(`Done! ${JSON.stringify(stats, null, 2)}`);
 };
 
