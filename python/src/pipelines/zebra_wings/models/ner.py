@@ -222,8 +222,7 @@ class NerModel:
                 padded_slot_ids = np.pad(
                     slot_ids, [[0, pad_width]], mode='constant'
                 )
-                y2_sentences.append(to_categorical(
-                    padded_slot_ids, num_slot_types))
+                y2_sentences.append(to_categorical(padded_slot_ids, num_slot_types))
             slot_tags = np.stack(y2_sentences)
             m.fit(
                 x=[intent_labels, embedded_sentence_words, embedded_sentence_word_chars],

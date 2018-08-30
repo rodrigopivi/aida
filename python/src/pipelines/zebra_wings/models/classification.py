@@ -117,11 +117,13 @@ class ClassificationModel:
         self.__logger(f'Start training classification model!')
         enough_accuracy_reached = False
         m = self.__model
+        intents = self.__dataset_params["intents"]
+        num_classes = len(intents)
         for idx, t_chunk in enumerate(train_data):
             if enough_accuracy_reached:
                 break
             x = self.__embeddings_model.embed(t_chunk[0])
-            y = to_categorical(np.array(t_chunk[1], dtype=np.int32))
+            y = to_categorical(np.array(t_chunk[1], dtype=np.int32), num_classes)
             self.__logger(f'Training batch {idx+1}.')
             m.fit(
                 x=x,

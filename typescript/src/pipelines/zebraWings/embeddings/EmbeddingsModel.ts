@@ -34,6 +34,7 @@ export class EmbeddingsModel {
     private maxNgrams: number;
     private embeddingDimensions: number;
     private model: tf.Model;
+    private inputModel: tf.Model | null = null;
 
     constructor(
         ngramToIdDictionary: { [key: string]: number },
@@ -56,16 +57,20 @@ export class EmbeddingsModel {
 
     public tfModel = () => this.model;
 
+    public modelInput = () => {
+        if (!this.inputModel) {
+            const input = tf.layers.input({ shape: [this.maxWords, this.maxNgrams], dtype: 'int32' });
+            const embedded = this.model.apply(input) as tf.SymbolicTensor;
+            this.inputModel = tf.model({ inputs: input, outputs: embedded });
+        }
+        return this.inputModel;
+    };
+
     // Embeds by word bigrams
     public embed = (sentences: string[]) => {
         return tf.tidy(() => {
-            const maxWords = this.maxWords;
-            const maxNgrams = this.maxNgrams;
-            const input = tf.layers.input({ shape: [maxWords, maxNgrams], dtype: 'int32' });
-            const embedded = this.model.apply(input) as tf.SymbolicTensor;
-            const entryModel = tf.model({ inputs: input, outputs: embedded });
             const sentencesTensor = this.sentencesToWordIds(sentences);
-            const output = entryModel.predictOnBatch(sentencesTensor) as tf.Tensor<tf.Rank.R3>;
+            const output = this.modelInput().predictOnBatch(sentencesTensor) as tf.Tensor<tf.Rank.R3>;
             sentencesTensor.dispose();
             return output;
         });
@@ -75,13 +80,8 @@ export class EmbeddingsModel {
 
     public embedByWordCharacters = (sentences: string[]) => {
         return tf.tidy(() => {
-            const maxWords = this.maxWords;
-            const maxNgrams = this.maxNgrams;
-            const input = tf.layers.input({ shape: [maxWords, maxNgrams], dtype: 'int32' });
-            const embedded = this.model.apply(input) as tf.SymbolicTensor;
-            const entryModel = tf.model({ inputs: input, outputs: embedded });
             const sentencesTensor = this.sentencesToCharIds(sentences);
-            const output = entryModel.predictOnBatch(sentencesTensor) as tf.Tensor<tf.Rank.R3>;
+            const output = this.modelInput().predictOnBatch(sentencesTensor) as tf.Tensor<tf.Rank.R3>;
             sentencesTensor.dispose();
             return output;
         });

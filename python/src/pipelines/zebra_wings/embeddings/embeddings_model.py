@@ -38,27 +38,29 @@ class EmbeddingsModel:
         self.__model = pretrained_embedding_model if pretrained_embedding_model != None else EmbeddingsModel.setup_model(
             pretrained_ngram_vectors, self.__max_words, self.__max_ngrams, self.__embedding_dimensions,
         )
+        self.__model_input = None
         self.tokenizer = tokenizer
 
     def keras_model(self): return self.__model
 
+    def model_input(self):
+        if not self.__model_input:
+            _input = keras.layers.Input(shape=(self.__max_words, self.__max_ngrams),)
+            embedded = self.__model(_input)
+            self.__model_input = keras.models.Model(inputs=_input, outputs=embedded)
+        return self.__model_input
+
+
     def embed(self, sentences):
-        _input = keras.layers.Input(
-            shape=(self.__max_words, self.__max_ngrams),)
-        embedded = self.__model(_input)
-        entry_model = keras.models.Model(inputs=_input, outputs=embedded)
         sentences_tensor = self.sentence_to_word_ids(sentences)
-        return entry_model.predict_on_batch(sentences_tensor)
+        return self.model_input().predict_on_batch(sentences_tensor)
 
     def dictionary(self):
         return self.__ngram_to_id_dictionary
 
     def embed_by_word_characters(self, sentences):
-        _input = keras.layers.Input(shape=(self.__max_words, self.__max_ngrams),)
-        embedded = self.__model(_input)
-        entry_model = keras.models.Model(inputs=_input, outputs=embedded)
         sentences_tensor = self.sentence_to_char_ids(sentences)
-        return entry_model.predict_on_batch(sentences_tensor)
+        return self.model_input().predict_on_batch(sentences_tensor)
 
     def sentence_to_char_ids(self, sentences):
         sentences_splitted_by_words = list(
