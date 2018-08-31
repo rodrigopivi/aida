@@ -16,7 +16,7 @@ function getTokenizer(language: 'en' | 'es') {
     throw new Error("Invalid config language. Only 'en' and 'es' are supported.");
 }
 
-const defaultPipelineDefinition: types.IPipelineDefinition = {
+export const defaultPipelineDefinition: types.IPipelineDefinition = {
     config: {
         classification: {
             epochs: 5,
@@ -25,11 +25,14 @@ const defaultPipelineDefinition: types.IPipelineDefinition = {
             numFilters: 128
         },
         default: {
-            batchSize: 70,
+            // NOTE Using batch size of 50 because on windows higher batch sizes tend to exit with
+            // lost context error, on a Mac a batchSize of 70-100 works just fine and trains faster.
+            // Reference TF.js issue: https://github.com/tensorflow/tfjs/issues/263
+            batchSize: 50,
             drop: 0.5,
             embeddingDimensions: 300,
             lossThresholdToStopTraining: 0,
-            maxNgrams: 25,
+            maxNgrams: 20,
             trainingValidationSplit: 0.3
         },
         ner: {
@@ -39,7 +42,6 @@ const defaultPipelineDefinition: types.IPipelineDefinition = {
         }
     }
 };
-
 export class AidaPipeline {
     private pipelineDefinition: types.IPipelineDefinition = defaultPipelineDefinition;
     private datasetParams: types.IDatasetParams;

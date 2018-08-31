@@ -1,7 +1,8 @@
 import * as tf from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-node';
+import { merge } from 'lodash';
 // import '@tensorflow/tfjs-node-gpu'; // USE GPU IF USING LINUX AND CUDA SETUP AFTER 'npm i --save @tensorflow/tfjs-node-gpu'
-import { AidaPipeline } from './pipelines/zebraWings/pipeline';
+import { AidaPipeline, defaultPipelineDefinition } from './pipelines/zebraWings/pipeline';
 import * as types from './types';
 
 const logger: types.IPipelineModelLogger = {
@@ -19,10 +20,12 @@ const trainTestAndSaveModels = async () => {
     const datasetParams: types.IDatasetParams = require('../public/models/dataset_params.json');
     const trainDataset: types.ITrainingParams = require('../public/models/dataset_training.json');
     const testDataset: types.ITestingParams = require('../public/models/dataset_testing.json');
+    const pipelineDefinition = merge({}, defaultPipelineDefinition, { config: { default: { batchSize: 120 } } });
     const pipeline = new AidaPipeline({
         datasetParams,
         logger,
         ngramToIdDictionary,
+        pipelineDefinition,
         pretrainedNGramVectors
     });
     await pipeline.train(trainDataset);

@@ -24,11 +24,11 @@ default_pipeline_definition = {
             'numFilters': 128,
         },
         'default': {
-            'batchSize': 70,
+            'batchSize': 120, # note: having a large batch size works fine from python but has problems with js (browsers)
             'drop': 0.5,
             'embeddingDimensions': 300,
             'lossThresholdToStopTraining': 0,
-            'maxNgrams': 25,
+            'maxNgrams': 20,
             'trainingValidationSplit': 0.3,
         },
         'ner': {
