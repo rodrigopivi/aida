@@ -130,7 +130,7 @@ export default class ClassificationModel extends types.PipelineModel implements 
                         sentence: s
                     })
                 );
-                sentencePreds.sort((a: any, b: any) => (a.confidence > b.confidence ? 0 : 1));
+                sentencePreds.sort((a: any, b: any) => (a.confidence > b.confidence ? -1 : 1));
                 prediction.push(sentencePreds[0]);
             });
         });
