@@ -36,6 +36,8 @@ export const defaultPipelineDefinition: types.IPipelineDefinition = {
             trainingValidationSplit: 0.3
         },
         ner: {
+            // NOTE: attention still is not implemented
+            addAttention: false,
             epochs: 5,
             lowConfidenceThreshold: 0.2,
             numFilters: [128, 128]

@@ -6,7 +6,7 @@ from random import shuffle
 import numpy as np
 import math
 from keras.utils import to_categorical
-
+from src.pipelines.zebra_wings.time_series_attention import TimeSeriesAttention
 
 class NerModel:
     @staticmethod
@@ -15,17 +15,12 @@ class NerModel:
         drop = config["drop"]
         embedding_dimensions = config["embeddingDimensions"]
         num_filters = config["numFilters"]
+        add_attention = config["addAttention"]
         num_slot_types = len(dataset_params["slotsToId"].keys())
         LEARNING_RATE = 0.0066  # use 1e-4 as default as alternative starting point
         ADAM_BETA_1 = 0.0025
         ADAM_BETA_2 = 0.1
-        optimizer = keras.optimizers.Adam(
-            lr=LEARNING_RATE, beta_1=ADAM_BETA_1, beta_2=ADAM_BETA_2)
-        class_label_input = keras.layers.Input(
-            shape=(len(dataset_params['intents']),), name="embedded_intent")
-        class_label_repeated = keras.layers.RepeatVector(
-            max_words)(class_label_input)
-
+        optimizer = keras.optimizers.Adam(lr=LEARNING_RATE, beta_1=ADAM_BETA_1, beta_2=ADAM_BETA_2)
         # WORD LEVEL EMBEDDINGS
         embedded_sentences_input = keras.layers.Input(
             shape=(max_words, embedding_dimensions), name="embedded_words")
@@ -40,9 +35,9 @@ class NerModel:
         conv_layer_2 = keras.layers.Conv1D(
             num_filters[0],
             1,
-            kernel_initializer='random_normal',
+            kernel_initializer='random_normal', # Xavier initialization for tanh, random_normal for relu
             padding='valid',
-            activation='relu',
+            activation='tanh', # NOTE: tanh at this layer consistently increases performance
         )(conv_layer_1)
         # CHARACTER LEVEL EMBEDDINGS
         embedded_characters_input = keras.layers.Input(
@@ -63,19 +58,32 @@ class NerModel:
             activation='relu',
         )(dropout_c1)
         # CONCATENATE BOTH CNN ENCODERS (WORD AND CHAR) WITH THE INPUT AND THE CHAR CNN LAYER 1
-        concated = keras.layers.Concatenate()([
-            class_label_repeated, embedded_sentences_input, conv_layer_2, conv_c_layer_2,
-        ])
+        class_label_input = keras.layers.Input(shape=(len(dataset_params['intents']),), name="embedded_intent")
+        class_label_repeated = keras.layers.RepeatVector(max_words)(class_label_input)
+        # NOTE: Adding masking when attention is activatted increases performance
+        if add_attention:
+            sentetnces_mask = keras.layers.Masking(mask_value=0.0)(embedded_sentences_input)
+            conv_layer2_mask = keras.layers.Masking(mask_value=0.0)(conv_layer_2)
+            conv_c_layer2_mask = keras.layers.Masking(mask_value=0.0)(conv_c_layer_2)
+            concated = keras.layers.Concatenate()([
+                class_label_repeated, sentetnces_mask, conv_layer2_mask, conv_c_layer2_mask,
+            ])
+        else:
+            concated = keras.layers.Concatenate()([
+                class_label_repeated, embedded_sentences_input, conv_layer_2, conv_c_layer_2,
+            ])
         lstm = keras.layers.LSTM(max_words, return_sequences=True)
-        bi_lstm = keras.layers.Bidirectional(
-            lstm, merge_mode='concat')(concated)
-
-        outputs = keras.layers.Dense(
-            num_slot_types,
-            activation='softmax',
-        )(bi_lstm)
-        model = keras.models.Model(inputs=[
-                                   class_label_input, embedded_sentences_input, embedded_characters_input], outputs=outputs)
+        bi_lstm = keras.layers.Bidirectional(lstm, merge_mode='concat', name='bidi_encoder')(concated)
+        if add_attention:
+            time_attention = TimeSeriesAttention(name='attention_weight')(bi_lstm)
+            final_hidden = keras.layers.Concatenate()([ bi_lstm, time_attention ])
+        else:
+            final_hidden = bi_lstm
+        outputs = keras.layers.Dense(num_slot_types, activation='softmax')(final_hidden)
+        model = keras.models.Model(
+            inputs=[class_label_input, embedded_sentences_input, embedded_characters_input],
+            outputs=outputs,
+        )
         model.compile(
             optimizer=optimizer,
             loss='categorical_crossentropy',
@@ -99,7 +107,6 @@ class NerModel:
     def raw_prediction(self, sentences, classification_pred):
         intents = self.__dataset_params['intents']
         embedded_sentences = self.__embeddings_model.embed(sentences)
-        # embedded_characters = self.__embeddings_model.sentences_to_character_vectors(sentences)
         embedded_characters = self.__embeddings_model.embed_by_word_characters(sentences)
         class_label = []
         for p in classification_pred:
@@ -196,7 +203,7 @@ class NerModel:
             self.__config['batchSize'],
             train_dataset['trainY'],
             train_dataset['trainY2'])
-        self.__logger('Start training NER model!')
+        self.__logger(f'Start training NER model! (attention enabled: {self.__config["addAttention"]})')
         enough_accuracy_reached = False
         m = self.__model
         num_slot_types = len(self.__dataset_params["slotsToId"].keys())
@@ -213,7 +220,6 @@ class NerModel:
             embedded_sentence_words = self.__embeddings_model.embed(
                 train_x_chunks)
             embedded_sentence_word_chars = self.__embeddings_model.embed_by_word_characters(train_x_chunks)
-            # embedded_sentence_word_chars = self.__embeddings_model.sentences_to_character_vectors(train_x_chunks)
             y2_sentences = []
             for words_slot_id in train_y2_chunks:
                 slot_ids = np.array(words_slot_id, dtype=np.int32)

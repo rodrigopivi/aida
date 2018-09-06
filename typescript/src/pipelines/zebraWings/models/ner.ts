@@ -2,6 +2,7 @@ import * as tf from '@tensorflow/tfjs';
 import { chunk, flatMapDeep } from 'lodash';
 import * as types from '../../../types';
 import { EmbeddingsModel } from '../embeddings/EmbeddingsModel';
+// import { TimeSeriesAttention } from '../TimeSeriesAttention';
 
 export default class NerModel extends types.PipelineModel implements types.IPipelineModel {
     private static setup(config: types.INerModelParams & types.IDefaultModelParams, datasetParams: types.IDatasetParams) {
@@ -68,13 +69,12 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
                 mergeMode: 'concat'
             })
             .apply(concated) as tf.SymbolicTensor;
-
-        const outputs = tf.layers
-            .dense({
-                activation: 'softmax',
-                units: numSlotTypes
-            })
-            .apply(biLstm) as tf.SymbolicTensor;
+        // let finalHidden = biLstm;
+        // if (config.addAttention) {
+        //     const timeAttention = new TimeSeriesAttention({ name: 'attention_weight' }).apply(biLstm) as tf.SymbolicTensor;
+        //     finalHidden = tf.layers.concatenate().apply([biLstm, timeAttention]) as tf.SymbolicTensor;
+        // }
+        const outputs = tf.layers.dense({ activation: 'softmax', units: numSlotTypes }).apply(biLstm) as tf.SymbolicTensor;
         const model = tf.model({ inputs: [classLabelInput, embeddedSentencesInput, embeddedCharactersInput], outputs });
         model.compile({ loss: 'categoricalCrossentropy', metrics: ['accuracy'], optimizer });
         return model;

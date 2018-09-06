@@ -24,7 +24,7 @@ default_pipeline_definition = {
             'numFilters': 128,
         },
         'default': {
-            'batchSize': 120, # note: having a large batch size works fine from python but has problems with js (browsers)
+            'batchSize': 120, # NOTE: having a large batch size works fine from python but has problems with js (browsers)
             'drop': 0.5,
             'embeddingDimensions': 300,
             'lossThresholdToStopTraining': 0,
@@ -35,6 +35,9 @@ default_pipeline_definition = {
             'epochs': 5,
             'lowConfidenceThreshold': 0.2,
             'numFilters': [128, 128],
+            # NOTE: Attention is implemented in python but not in tensorflow.js so the exported model to js won't work
+            # if attention is activated
+            'addAttention': False, # NOTE: adds a time distribuited self attention layer at the last hidden layer
         },
     },
 }

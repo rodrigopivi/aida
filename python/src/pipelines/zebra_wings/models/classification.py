@@ -21,8 +21,7 @@ class ClassificationModel:
         LEARNING_RATE = 0.0066  # use 1e-4 as default as alternative starting point
         ADAM_BETA_1 = 0.0025
         ADAM_BETA_2 = 0.1
-        optimizer = keras.optimizers.Adam(
-            lr=LEARNING_RATE, beta_1=ADAM_BETA_1, beta_2=ADAM_BETA_2)
+        optimizer = keras.optimizers.Adam(lr=LEARNING_RATE, beta_1=ADAM_BETA_1, beta_2=ADAM_BETA_2)
         # Layer 1: Convolution + max pool
         inputs = keras.layers.Input(
             shape=(max_words, embedding_dimensions), name="embedded_words")
@@ -65,17 +64,12 @@ class ClassificationModel:
             padding='valid'
         )(convLayer3)
         # Concatenation of all CNN layers on different levels and apply a fully connected dense layer
-        concat = keras.layers.Concatenate(axis=1)(
-            [maxpool1, maxpool2, maxpool3])
+        concat = keras.layers.Concatenate(axis=1)([maxpool1, maxpool2, maxpool3])
         flat = keras.layers.Flatten()(concat)
         dropout = keras.layers.Dropout(drop)(flat)
         flat_pool_1 = keras.layers.Flatten()(maxpool1)
-        concat_for_classification = keras.layers.Concatenate(
-            axis=1)([dropout, flat_pool_1])
-        outputs = keras.layers.Dense(
-            num_classes,
-            activation='softmax',
-        )(concat_for_classification)
+        concat_for_classification = keras.layers.Concatenate(axis=1)([dropout, flat_pool_1])
+        outputs = keras.layers.Dense(num_classes, activation='softmax')(concat_for_classification)
         model = keras.models.Model(inputs=inputs, outputs=outputs)
         model.compile(
             optimizer=optimizer,
@@ -114,7 +108,7 @@ class ClassificationModel:
             train_dataset['trainX'], self.__config['batchSize'], train_dataset['trainY'])
         n_batches = math.ceil(
             len(train_dataset['trainX'])/self.__config['batchSize'])
-        self.__logger(f'Start training classification model!')
+        self.__logger('Start training classification model!')
         enough_accuracy_reached = False
         m = self.__model
         intents = self.__dataset_params["intents"]
