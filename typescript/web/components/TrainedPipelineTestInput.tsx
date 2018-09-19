@@ -36,7 +36,7 @@ export default class TrainedPipelineTestInput extends React.Component<IPipelineT
                 </ul>
             </div>
             <p>
-                You can try a sentence like 'add to my calendar that tomorrow 9am i have to go to the dentist' or 'play new york new york
+                You can try a sentence like 'please remind to me watch real madrid match tomorrow at 9pm' or 'play new york new york
                 from frank sinatra'
             </p>
             <p>
@@ -53,7 +53,7 @@ export default class TrainedPipelineTestInput extends React.Component<IPipelineT
         return (
             <div>
                 <Row type="flex" justify="center">
-                    <Col span={12}>
+                    <Col span={24} sm={{ span: 12 }} >
                         <Card title="Test trained pipeline:" style={{ minHeight: '100%' }}>
                             <p>
                                 <SearchInput
@@ -68,7 +68,7 @@ export default class TrainedPipelineTestInput extends React.Component<IPipelineT
                             {this.renderIntentsList()}
                         </Card>
                     </Col>
-                    <Col span={12}>
+                    <Col span={24} sm={{ span: 12 }} >
                         <Card title="Pipeline output:" style={{ minHeight: '100%' }}>
                             <pre style={{ marginTop: '2em' }}>{this.state.outTextContent || ''}</pre>
                         </Card>

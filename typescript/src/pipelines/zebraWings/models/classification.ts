@@ -14,7 +14,9 @@ export default class ClassificationModel extends types.PipelineModel implements 
         const ADAM_BETA_2 = 0.1;
         const optimizer = tf.train.adam(LEARNING_RATE, ADAM_BETA_1, ADAM_BETA_2);
         // Layer 1: Convolution + max pool
-        const input = tf.input({ dtype: 'float32', shape: [maxWords, config.embeddingDimensions] });
+        const input = tf.input({
+            dtype: 'float32', shape: [maxWords, config.embeddingDimensions], name: 'embedded_words'
+        });
         const convLayer1 = tf.layers
             .conv1d({
                 activation: 'relu',
@@ -22,6 +24,7 @@ export default class ClassificationModel extends types.PipelineModel implements 
                 inputShape: [maxWords, config.embeddingDimensions],
                 kernelInitializer: 'randomNormal',
                 kernelSize: [config.filterSizes[0]],
+                name: 'classConv1',
                 padding: 'valid'
             })
             .apply(input);
@@ -39,6 +42,7 @@ export default class ClassificationModel extends types.PipelineModel implements 
                 inputShape: [maxWords, config.embeddingDimensions],
                 kernelInitializer: 'randomNormal',
                 kernelSize: [config.filterSizes[1]],
+                name: 'classConv2',
                 padding: 'valid'
             })
             .apply(input);
@@ -56,6 +60,7 @@ export default class ClassificationModel extends types.PipelineModel implements 
                 inputShape: [maxWords, config.embeddingDimensions],
                 kernelInitializer: 'randomNormal',
                 kernelSize: [config.filterSizes[2]],
+                name: 'classConv3',
                 padding: 'valid'
             })
             .apply(input);

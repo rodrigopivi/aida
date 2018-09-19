@@ -1,7 +1,7 @@
 import * as tf from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-node';
-import { merge } from 'lodash';
 // import '@tensorflow/tfjs-node-gpu'; // USE GPU IF USING LINUX AND CUDA SETUP AFTER 'npm i --save @tensorflow/tfjs-node-gpu'
+import { merge } from 'lodash';
 import { AidaPipeline, defaultPipelineDefinition } from './pipelines/zebraWings/pipeline';
 import * as types from './types';
 

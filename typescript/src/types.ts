@@ -147,6 +147,7 @@ export interface INerModelParams {
     lowConfidenceThreshold: number;
     numFilters: [number, number];
     addAttention: boolean;
+    rnnUnits: number;
 }
 export interface IPipelineDefinition {
     config: IPipelineConfig;

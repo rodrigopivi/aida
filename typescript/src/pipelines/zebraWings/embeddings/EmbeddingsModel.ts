@@ -78,37 +78,6 @@ export class EmbeddingsModel {
 
     public dictionary = () => this.ngramToIdDictionary;
 
-    public embedByWordCharacters = (sentences: string[]) => {
-        return tf.tidy(() => {
-            const sentencesTensor = this.sentencesToCharIds(sentences);
-            const output = this.modelInput().predictOnBatch(sentencesTensor) as tf.Tensor<tf.Rank.R3>;
-            sentencesTensor.dispose();
-            return output;
-        });
-    };
-
-    private sentencesToCharIds = (sentences: string[]) => {
-        return tf.tidy(() => {
-            const sentencesSplittedByWords = sentences.map(s => this.tokenizer.splitSentenceToWords(s));
-            const buffer = tf.buffer([sentences.length, this.maxWords, this.maxNgrams], 'int32') as tf.TensorBuffer<tf.Rank.R3>;
-            sentencesSplittedByWords.forEach((s, sentenceIndex) => {
-                s.forEach((w: string, wordIndex: number) => {
-                    w.split('').forEach((letter, lidx) => {
-                        if (lidx >= this.maxNgrams) {
-                            return;
-                        }
-                        if (this.ngramToIdDictionary[letter] !== undefined) {
-                            buffer.set(this.ngramToIdDictionary[letter], sentenceIndex, wordIndex, lidx);
-                        } else {
-                            buffer.set(0, sentenceIndex, wordIndex, lidx);
-                        }
-                    });
-                });
-            });
-            return buffer.toTensor();
-        });
-    };
-
     private sentencesToWordIds = (sentences: string[]) => {
         return tf.tidy(() => {
             const sentencesSplittedByWords = sentences.map(s => this.tokenizer.splitSentenceToWords(s));

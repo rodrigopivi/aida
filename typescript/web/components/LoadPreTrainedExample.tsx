@@ -49,7 +49,7 @@ export default class LoadPreTrainedExample extends React.Component<{}, ILoadPreT
             : 'Start demo';
         return (
             <Row type="flex">
-                <Col span={12} style={{ textAlign: 'justify' }}>
+                <Col span={24} sm={{ span: 12 }} style={{ textAlign: 'justify' }}>
                     <h1>Build conversational user experiences</h1>
                     <h3>Aida is a library that helps you build conversational user experiences with this concepts in mind:</h3>
                     <ul>
@@ -76,7 +76,7 @@ export default class LoadPreTrainedExample extends React.Component<{}, ILoadPreT
                             <a href="https://fasttext.cc/" target="_blank">
                                 fastText
                             </a>{' '}
-                            bigram and unigram embeddings, this keeps the dictionary very small, fast to download.
+                            bigram embeddings, this keeps the dictionary very small, fast to download.
                         </li>
                         <li>
                             <strong>Accurate:</strong> Carefully crafted, close to state of the art neural network models for text
@@ -93,7 +93,7 @@ export default class LoadPreTrainedExample extends React.Component<{}, ILoadPreT
                     </ul>
                     <p>Click 'start demo' to continue.</p>
                 </Col>
-                <Col span={12}>
+                <Col span={24} sm={{ span: 12 }}>
                     <Card style={{ marginLeft: '2em', textAlign: 'center' }}>
                         <div>
                             <Progress type="circle" percent={this.state.downloadProgress} />
@@ -101,12 +101,12 @@ export default class LoadPreTrainedExample extends React.Component<{}, ILoadPreT
                         <div style={{ marginTop: '1em', marginBottom: '1em' }}>
                             <Select
                                 defaultValue={this.state.selectedModel}
-                                style={{ width: 280 }}
+                                style={{ maxWidth: '100%' }}
                                 onChange={v => this.setState({ selectedModel: v as 'web' | 'node' | 'keras' })}
                             >
-                                <Select.Option value="web">Load models trained using tf.js web</Select.Option>
-                                <Select.Option value="node">Load models trained using tf.js node</Select.Option>
-                                <Select.Option value="keras">Load models trained using keras</Select.Option>
+                                <Select.Option value="web">Load web trained models</Select.Option>
+                                <Select.Option value="node">Load node trained models</Select.Option>
+                                <Select.Option value="keras">Load keras trained models</Select.Option>
                             </Select>
                         </div>
                         <div>
@@ -115,7 +115,7 @@ export default class LoadPreTrainedExample extends React.Component<{}, ILoadPreT
                             </Button>
                         </div>
                         <br />
-                        <p>Will download the trained model (about 3mb compressed)</p>
+                        <p>Will download the trained models (about 5mb)</p>
                     </Card>
                 </Col>
             </Row>

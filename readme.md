@@ -1,125 +1,147 @@
-# Aida NLP
+<p align="center">
+  <a href="https://aida.dor.ai">
+    <img alt="Aida" src="icon.png" width="60" />
+  </a>
+</p>
+<h1 align="center">
+  Aida
+</h1>
 
-[![Alt text](screenshot.png?raw=true "Screenshot of Aida web UI")](https://aida.dor.ai)
+<p align="center">
+  <a href="https://aida.dor.ai" title="License">
+    <img alt="License" src="https://img.shields.io/github/license/rodrigopivi/aida.svg" width="100" />
+  </a>
+  <br />
+  <strong>Your application can understand natural language in house.</strong><br>
+  Use open source AI models that can train from the browser using javascript or python and can run everywhere.
+</p>
 
-[Try the demo and online training experience](https://aida.dor.ai)
+<h3 align="center">
+  <a href="https://aida.dor.ai">
+    Try it online!
+  </a>
+</h3>
 
-Your application can understand natural language privately and without infrastructure.
+<hr />
+<br/>
+<p align="center">
+<a href="https://www.patreon.com/bePatron?u=13643440" title="Become a Patron!">
+<img alt="Become a Patron!" src="https://c5.patreon.com/external/logo/become_a_patron_button.png" width="170" />
+</a>
+<br/><br/>
+Designing and maintaining chatito takes time and effort, if it was usefull for you, please consider making a donation and share the abundance! :)
+</p>
 
-Use open source AI models that can train from the browser, nodejs or python and can run everywhere.
+<hr />
+<br/>
 
-[Try it online!](https://aida.dor.ai)
+## Setup and training
+
+1. Clone the GH proejct and install dependencies:
+      - Run `npm install` from the `./typescript` directory
+      - Run `pip3 install -r requirements.txt` from the `./python` directory
+
+2. Edit or create the chatito files inside `./typescript/examples/en/intents` to customize the dataset generation as you need.
+
+3. From `./typescript` run `npm run dataset:en:process`. This will generate many files at the `./typescript/public/models` directory. The dataset, the dataset parameters, the testing parameters and the embeddings dictionary. You can further inspect those generated files to make sence of their content. (Note: Aida also supports spanish language, if you need other language you can add if you first download the fastText embeddings for that language).
+
+4. You can start training from 3 local environments:
+      - From python: just open `./python/main.ipynb` with jupyter notebook or jupyter lab. Python will load your custom settings generated at step 3. After running the notebook, convert the models to tensorflow.js web format running `npm run python:convert` from the `./typescript` directory.
+
+      - From web browsers: from `./typescript` run `npm run web:start`. Then navigate to `http://localhost:8000/train` for the training web UI. After training, downloading the model to the `./typescript/public/pretrained/web` directory.
+
+      - From node.js: from `./typescript` run `npm run node:start`.
+
+    NOTE: After training (and converting for python), the models should be available at `./typescript/public/pretrained` with a custom directory for each platform:
 
 ## Technical overview
 
-Aida's NLP pipeline is composed of 3 models. The `Embeddings model` takes text sentences and encodes them to high dimensional vector representations. The `text classification model` takes the encoded sentences and predicts the intent of the sentence. And finally the `Named entity recognition model` takes the sentence embeddings by bigrams, unigrams, and the text classification output (the intent tags), and returns the sentence slots. Here is a more detailed description of the models.
+Aida's NLP pipeline is composed of 3 models. The `Embeddings model` takes text sentences and encodes them to high dimensional vector representations. The `text classification model` takes the encoded sentences and predicts the intent of the sentence. And finally the `Named entity recognition model` takes the sentence embeddings by bigrams and the text classification output (the intent tags), and returns the sentence slots. Here is a more detailed description of the models.
 
 ### Embeddings model
 
 Plot:
 
-![Alt text](docs/embedding.png?raw=true "embeddings model")
+![Alt text](docs/embedding.png "embeddings model")
 
-The embeddings model uses a pre-trained fastText dictionary of unigrams and bigrams to form word representations. For text classification, the embeddings model first takes a sentence, then breaks the sentence into words. Finally and depending on the parameters, it can split the words by bigrams or by characters. Here is an example of using bigrams (sentence => words => word bigrams):
+The embeddings model uses a pre-trained fastText dictionary of bigrams to form word representations. For text classification, the embeddings model first takes a sentence, then breaks the sentence into words and then splits the words by bigrams. Here is an example of this process (sentence => words => word bigrams):
 
 ```
 "hi friend" => ["hi", "friend"] => [["hi"],["fr", "ri", "ie", "en", "nd"]]
 ```
 
- Then each bigram or character inside each word is replaced by its 300 dimensional representation provided by fastText. Then we obtain a single 300 dimensional vector for each word of the sentence by the sum and average of the bigrams or characters of the word.
+ Then each word bigram is replaced by its 300 dimensional representation provided by fastText. Then we obtain a single 300 dimensional vector for each word of the sentence by the sum and average of the bigrams.
 
-The dimension each sentence tensor is: `22 (length in words of the dataset longest sentence)` by `300 (embedding dimensions)`. Here is a visualization of the embeddings tensor given this sentence: `add to my calendar that tomorrow 9am i have to go to the dentist`
+The dimension each sentence tensor is: `21 (length in words of the dataset longest sentence)` by `300 (embedding dimensions)`. Here is a visualization of the embeddings tensor given this sentence: `please remind to me watch real madrid match tomorrow at 9pm`
 
-![Alt text](docs/embedded_sentence.png?raw=true "embedded senttence")
+![Alt text](docs/embedded_sentence.png "embedded senttence")
 
 
 ### Text classification model
 
 Plot:
 
-![Alt text](docs/classification.png?raw=true "text classification model")
+![Alt text](docs/classification.png "text classification model")
 
 The text classification model is composed of 3 CNN layers concated and with a skip-layer connection and a dense layer output. The input is the output of the embeddings model for a given sentence using bigram embeddings and the ouput is the list of probabilities this sentence belongs to each of the classification classes.
 
-Here is an animation of the 3 convolutional layers activations during training, we see the convolutional layer filters learn features from the 300 dimensional vector representations. We pass the same sentence (`add to my calendar that tomorrow 9am i have to go to the dentist`) to the model at the end of each training batch (61 batches) and plot the activations at each convolutional layer to see how the activations evolve as the model learns to classify. (note: animations won't loop, refresh to restart animations from frame 0).
+Here is an animation of the 3 convolutional layers activations during training, we see the convolutional layer filters learn features from the 300 dimensional vector representations and also the output layer visualization. We pass the same sentence (`please remind to me watch real madrid match tomorrow at 9pm`) to the model at the end of each training batch (~50 batches) and plot the activations to see how they evolve as the model learns to classify. (note: frame 0 is empty for 1 second, and the last frame also pauses for 1 second).
 
 First convolutional layer activations animation:
 
-![Alt text](docs/nConv1.gif?raw=true "Conv 1")
+![text classification Conv 1](docs/classConv1.gif "text classification Conv 1")
 
 Second convolutional layer activations animation:
 
-![Alt text](docs/nConv2.gif?raw=true "Conv 2")
+![text classification Conv 2](docs/classConv2.gif "text classification Conv 2")
 
 Third convolutional layer activations animation:
 
-![Alt text](docs/nConv3.gif?raw=true "Conv 3")
+![text classification Conv 3](docs/classConv3.gif "text classification Conv 3")
+
+Output layer visualization:
+
+![text classification output](docs/classOutput.gif "text classification output")
 
 NOTE: The model for text classification performs good and fast enough so there was no need to add a simple self-attention mechanism but it can be explored.
 
 ### Named entity recognition model
 Plot:
 
-![Alt text](docs/ner.png?raw=true "ner model")
+![Alt text](docs/ner.png "ner model")
 
+The named entity recognition (NER) model uses 2 inputs. The sentence embeddings at the word bigrams level and the one hot encoded classification tag for the sentence (the text classification model output).
 
-The named entity recognition (NER) model uses 3 different input values. One input is the sentence embeddings at the word bigrams level, the second input is the sentence embeddings at the word character level, and the third input is the one hot encoded classification tag for the sentence (the text classification model output).
-
-The training data is one-hot encoded with inside-outside (IO) tagging format. The model architecture uses a CNN at the sentence-word-bigram level, another CNN at the sentence-word-character level, both concatenated with the classification tags, then a bidirectional LSTM with an optional masked multi-dimensional time-series attention mechanism and a final dense layer.
+The training data is one-hot encoded with inside-outside (IO) tagging format. The model architecture uses a CNN at the sentence-word-bigram level concatenated with the classification tags repeated to match the length of words, then a bidirectional LSTM with no merge mode, with optional time-series attention mechanism applied only to the forward lstm, and a final dense output layer.
 
 Given a sentence, the model will return its tags and the class of the tag. e.g.:
 ```json
 {
-  "sentence": "add to my calendar that tomorrow 9am i have to go to the dentist",
+  "sentence": "please remind to me watch real madrid match tomorrow at 9pm",
   "slots": {
-    "dateTime": [{ "value": "tomorrow 9am" }],
-    "calendarEvent": [{ "value": "the dentist" } ]
+    "dateTime": [{ "value": "tomorrow at 9am" }],
+    "calendarEvent": [{ "value": "real madrid match" } ]
   }
 }
 ```
 
+Here is an animation of the 2 deep convolutional layers activations during training, we see the convolutional layer filters learn features from the 300 dimensional vector representations and also the output layer visualization. We pass the same sentence (`please remind to me watch real madrid match tomorrow at 9pm`) to the model at the end of each training batch (~50 batches) and plot the activations to see how they evolve as the model learns to perform NER. (note: frame 0 is empty for 1 second, and the last frame also pauses for 1 second).
+
+First convolutional layer activations animation:
+
+![NER Conv 1](docs/nerConv1.gif "NER Conv 1")
+
+Second convolutional layer activations animation:
+
+![NER Conv 2](docs/nerConv2.gif "NER Conv 2")
+
+Output layer visualization:
+
+![NER output](docs/nerOutput.gif "NER output")
+
 ## Visualization code snippets for python
 
- - This is the code to plot the models diagrams:
-
-```python
-from keras.utils import plot_model
-models = pipeline.models()
-# save model graphs as png files
-plot_model(models['classification'].keras_model(), to_file='classification.png')
-plot_model(models['ner'].keras_model(), to_file='ner.png')
-plot_model(models['embedding'].keras_model(), to_file='embedding.png')
-```
-
-- How to plot how the layers activated at different moments of training for the same sentence:
-
-```python
-# import the visualization utility functions
-from src.utils.get_activations import visualize, visualize_layer_output
-
-# given a mdodel 'm' defined but not trained, put this code just before calling m.fit:
-
-# use a test sentence and embed it
-sentence = 'add to my calendar that tomorrow 9am i have to go to the dentist'
-x_viz = self.__embeddings_model.embed([sentence])
-
-# visualize the sentence as a vector representation and save it to embedded_sentence.png
-visualize(x_viz, 'embedded_sentence')
-
-# save the image of how the convolution layers actiations looks before training start
-visualize_layer_output('conv1', m, x_viz, 'conv1-')
-visualize_layer_output('conv2', m, x_viz, 'conv2-')
-visualize_layer_output('conv3', m, x_viz, 'conv3-')
-
-# NOTE: Put this code inside the training batches loop.
-# inside e.g.: `for idx, t_chunk in enumerate(train_data)` and after `m.fit` call.
-# visualize how the same sentence activated the layer at different epochs during training and save to images
-visualize_layer_output('conv1', m, x_viz, f'conv1-{idx}')
-visualize_layer_output('conv2', m, x_viz, f'conv2-{idx}')
-visualize_layer_output('conv3', m, x_viz, f'conv3-{idx}')
-```
-
-The previous code would plot a total of `((n_batches + 1) * 3)` images. 
+There is code at `classification.py` and `ner.py` marked inside `# ===   Visualization code block   ===` comments that can be uncommented to generate images and then gif's of the activation progress for a given phrase. Also at the jupyter notebook, there is code for plotting the model diagrams.
 
 # Resources
 
@@ -145,6 +167,8 @@ The previous code would plot a total of `((n_batches + 1) * 3)` images.
 
 - [Universal Language Model Fine-tuning for Text Classification](https://arxiv.org/abs/1801.06146) [(blog post)](http://nlp.fast.ai/classification/2018/05/15/introducting-ulmfit.html)- ULMFiT is the current state of the art for NLP tasks.
 
+# Author and maintainer
+Rodrigo Pimentel
 
 # License
 The code is open sourced under the BSD-3-Clause license, please contact me if you want to use the code under a less restrictive license.

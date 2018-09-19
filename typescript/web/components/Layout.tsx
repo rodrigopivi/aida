@@ -7,6 +7,7 @@ import { Logo } from './Logo';
 
 const { Header, Content, Footer } = Layout;
 
+const overviewRouteRE = /^\/overview(\/.*)?$/i;
 const demoRouteRE = /^\/demo(\/.*)?$/i;
 const trainRouteRE = /^\/train(\/.*)?$/i;
 
@@ -21,11 +22,13 @@ const StyledContent = styled(Content)`
 
 export default class MainLayout extends React.Component<any, {}> {
     public render() {
-        let defaultSelectedKeys = '0';
-        if (demoRouteRE.test(this.props.location.pathname)) {
+        let defaultSelectedKeys = '-1';
+        if (overviewRouteRE.test(this.props.location.pathname)) {
             defaultSelectedKeys = '0';
-        } else if (trainRouteRE.test(this.props.location.pathname)) {
+        } else if (demoRouteRE.test(this.props.location.pathname)) {
             defaultSelectedKeys = '1';
+        } else if (trainRouteRE.test(this.props.location.pathname)) {
+            defaultSelectedKeys = '2';
         }
         return (
             <Layout style={{ minHeight: '100vh' }}>
@@ -44,12 +47,18 @@ export default class MainLayout extends React.Component<any, {}> {
                     <Layout.Sider width={200} breakpoint="lg" collapsedWidth="0" theme="light" style={{ backgroundColor: '#fcfcfc' }}>
                         <Menu theme="light" mode="inline" defaultSelectedKeys={[defaultSelectedKeys]} style={{ background: '#fcfcfc' }}>
                             <Menu.Item key="0">
+                                <Link to="/overview">
+                                    <Icon type="right-circle-o" />
+                                    Overview
+                                </Link>
+                            </Menu.Item>
+                            <Menu.Item key="1">
                                 <Link to="/demo">
                                     <Icon type="right-circle-o" />
                                     Demo
                                 </Link>
                             </Menu.Item>
-                            <Menu.Item key="1">
+                            <Menu.Item key="2">
                                 <Link to="/train">
                                     <Icon type="right-circle-o" />
                                     Train your own

@@ -1,5 +1,5 @@
 
-%[addEventToCalendar]('training': '800', 'testing': '500')
+%[addEventToCalendar]('training': '1000', 'testing': '500')
     ~[please?] ~[add to calendar] @[calendarEvent] ~[at] @[dateTime]
     ~[set the] @[calendarEvent#alarm] ~[at?] @[dateTime]
     ~[add to calendar] ~[at] @[dateTime] ~[i have?] @[calendarEvent] 
@@ -36,7 +36,8 @@
     ~[alarm]
 
 @[dateTime]
-    ~[contextualDate] ~[times?]
+    ~[contextualDate] ~[at?] ~[times?]
+    ~[contextualDate] at ~[times]
     ~[times?] ~[contextualDate]
     ~[monthsDates] ~[monthDayExtensions] ~[times?]
     ~[times?] ~[monthsDates] ~[monthDayExtensions]
@@ -134,6 +135,8 @@
     at
     scheduled on
     for
+    about
+    around
 
 ~[add to calendar]
     add to the calendar
@@ -159,6 +162,7 @@
     tomorrow
     this ~[dayNames]
     next week
+    ~[dayNames] next week
 
 ~[dayNames]
     monday

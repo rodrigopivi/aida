@@ -1,5 +1,5 @@
 
-%[addEventToCalendar]('training': '800', 'testing': '500')
+%[addEventToCalendar]('training': '1000', 'testing': '500')
     ~[please?] ~[agrega al calendario] ~[que?] ~[tengo?] @[calendarEvent] ~[en?] @[dateTime]
     ~[pon] @[calendarEvent#alarma] ~[en?] @[dateTime]
     ~[agrega al calendario] ~[que] @[dateTime] ~[tengo?] @[calendarEvent]

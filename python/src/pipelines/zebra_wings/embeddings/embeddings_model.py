@@ -58,26 +58,6 @@ class EmbeddingsModel:
     def dictionary(self):
         return self.__ngram_to_id_dictionary
 
-    def embed_by_word_characters(self, sentences):
-        sentences_tensor = self.sentence_to_char_ids(sentences)
-        return self.model_input().predict_on_batch(sentences_tensor)
-
-    def sentence_to_char_ids(self, sentences):
-        sentences_splitted_by_words = list(
-            map(lambda s: self.tokenizer.split_sentence_to_words(s), sentences))
-        buffer = np.zeros((len(sentences), self.__max_words, self.__max_ngrams), dtype=np.int32)
-        for si, sentence in enumerate(sentences_splitted_by_words):
-            for wi, word in enumerate(sentence):
-
-                for li, letter in enumerate(list(word)):
-                    if (li >= self.__max_ngrams):
-                        break    
-                    if letter in self.__ngram_to_id_dictionary:
-                        buffer[si, wi, li] = self.__ngram_to_id_dictionary[letter]
-                    else:
-                        buffer[si, wi, li] = 0
-        return buffer
-
     def sentence_to_word_ids(self, sentences):
         sentences_splitted_by_words = list(
             map(lambda s: self.tokenizer.split_sentence_to_words(s), sentences))

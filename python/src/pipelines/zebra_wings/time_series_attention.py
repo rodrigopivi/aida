@@ -19,12 +19,12 @@ class TimeSeriesAttention(Layer):
     def build(self, input_shape):
         dimensions = input_shape[2]
         timed = keras.models.Sequential(name='per_time_step')
-        timed.add(keras.layers.Dense(dimensions, input_shape=(dimensions,), kernel_initializer='zeros'))
-        timed.add(keras.layers.Activation('softmax'))
-        # Xavier initializatiton is good for tanh activation
-        timed.add(keras.layers.Dense(dimensions, kernel_initializer='glorot_normal'))
-        timed.add(keras.layers.Activation('tanh'))
-        self.timed = keras.layers.TimeDistributed(timed)
+        timed.add(
+            keras.layers.Dense(dimensions, input_shape=(dimensions,), kernel_initializer='zeros', activation='softmax', name='att_dense1')
+        )
+        timed.add(keras.layers.Dense(dimensions, kernel_initializer='glorot_normal', activation='tanh', name='att_dense2'))
+        self.timed = keras.layers.TimeDistributed(timed, name='att_td')
+        self.timed.build(input_shape)
         self.trainable_weights = self.timed.trainable_weights
         self.non_trainable_weights = self.timed.non_trainable_weights
         self.built = True

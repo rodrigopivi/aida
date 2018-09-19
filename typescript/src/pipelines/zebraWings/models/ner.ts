@@ -2,22 +2,21 @@ import * as tf from '@tensorflow/tfjs';
 import { chunk, flatMapDeep } from 'lodash';
 import * as types from '../../../types';
 import { EmbeddingsModel } from '../embeddings/EmbeddingsModel';
-// import { TimeSeriesAttention } from '../TimeSeriesAttention';
+import { TimeSeriesAttention } from '../TimeSeriesAttention';
 
 export default class NerModel extends types.PipelineModel implements types.IPipelineModel {
     private static setup(config: types.INerModelParams & types.IDefaultModelParams, datasetParams: types.IDatasetParams) {
         const maxWords = datasetParams.maxWordsPerSentence;
-        const { drop, embeddingDimensions, numFilters } = config;
+        const { addAttention, embeddingDimensions, numFilters, rnnUnits } = config;
         const numSlotTypes = Object.keys(datasetParams.slotsToId).length;
         const LEARNING_RATE = 0.0066; // use 1e-4 as default as alternative starting point
         const ADAM_BETA_1 = 0.0025;
         const ADAM_BETA_2 = 0.1;
         const optimizer = tf.train.adam(LEARNING_RATE, ADAM_BETA_1, ADAM_BETA_2);
-        const classLabelInput = tf.input({ dtype: 'float32', shape: [datasetParams.intents.length] });
-        const classLabelRepeated = tf.layers.repeatVector({ n: maxWords }).apply(classLabelInput) as tf.SymbolicTensor;
-
         // WORD-NGRAMS LEVEL EMBEDDINGS
-        const embeddedSentencesInput = tf.input({ dtype: 'float32', shape: [maxWords, embeddingDimensions] });
+        const embeddedSentencesInput = tf.input({
+            dtype: 'float32', shape: [maxWords, embeddingDimensions], name: 'embedded_words'
+        });
         const convLayer1 = tf.layers
             .conv1d({
                 activation: 'relu',
@@ -25,6 +24,7 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
                 inputShape: [maxWords, embeddingDimensions],
                 kernelInitializer: 'randomNormal',
                 kernelSize: 1,
+                name: 'nerConv1',
                 padding: 'valid'
             })
             .apply(embeddedSentencesInput) as tf.SymbolicTensor;
@@ -34,48 +34,32 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
                 filters: numFilters[0],
                 kernelInitializer: 'randomNormal',
                 kernelSize: 1,
+                name: 'nerConv2',
                 padding: 'valid'
             })
             .apply(convLayer1) as tf.SymbolicTensor;
-        // WORD-CHARACTER LEVEL EMBEDDINGS
-        const embeddedCharactersInput = tf.input({
-            dtype: 'float32',
-            shape: [maxWords, embeddingDimensions]
-        });
-        const convCLayer1 = tf.layers
-            .conv1d({
-                activation: 'relu',
-                filters: numFilters[1],
-                kernelInitializer: 'randomNormal',
-                kernelSize: 1,
-                padding: 'valid'
-            })
-            .apply(embeddedCharactersInput) as tf.SymbolicTensor;
-        const dropOutC1 = tf.layers.dropout({ rate: drop }).apply(convCLayer1) as tf.SymbolicTensor;
-        const convCLayer2 = tf.layers
-            .conv1d({
-                activation: 'relu',
-                filters: numFilters[1],
-                kernelInitializer: 'randomNormal',
-                kernelSize: 1,
-                padding: 'valid'
-            })
-            .apply(dropOutC1) as tf.SymbolicTensor;
         // CONCATENATE BOTH CNN ENCODERS (WORD AND CHAR) WITH THE INPUT AND THE CHAR CNN LAYER 1
-        const concated = tf.layers.concatenate().apply([classLabelRepeated, embeddedSentencesInput, convLayer2, convCLayer2]);
+        const classLabelInput = tf.input({
+            dtype: 'float32', shape: [datasetParams.intents.length], name: 'embedded_intent'
+        });
+        const classLabelRepeated = tf.layers.repeatVector({ n: maxWords }).apply(classLabelInput) as tf.SymbolicTensor;
+        const concated = tf.layers.concatenate().apply([
+            classLabelRepeated, embeddedSentencesInput, convLayer2,
+        ]);
         const biLstm = tf.layers
             .bidirectional({
-                layer: tf.layers.lstm({ units: maxWords, returnSequences: true }) as tf.RNN,
-                mergeMode: 'concat'
+                layer: tf.layers.lstm({ units: rnnUnits, returnSequences: true, name: 'bidi_encoder'}) as tf.RNN
             })
-            .apply(concated) as tf.SymbolicTensor;
-        // let finalHidden = biLstm;
-        // if (config.addAttention) {
-        //     const timeAttention = new TimeSeriesAttention({ name: 'attention_weight' }).apply(biLstm) as tf.SymbolicTensor;
-        //     finalHidden = tf.layers.concatenate().apply([biLstm, timeAttention]) as tf.SymbolicTensor;
-        // }
-        const outputs = tf.layers.dense({ activation: 'softmax', units: numSlotTypes }).apply(biLstm) as tf.SymbolicTensor;
-        const model = tf.model({ inputs: [classLabelInput, embeddedSentencesInput, embeddedCharactersInput], outputs });
+            .apply(concated) as tf.SymbolicTensor[];
+        let finalHidden: tf.SymbolicTensor | null = null;
+        if (addAttention) {
+            const timeAttention = new TimeSeriesAttention({ name: 'attention_weight' }).apply(biLstm[0]) as tf.SymbolicTensor;
+            finalHidden = tf.layers.concatenate().apply([timeAttention, biLstm[0], biLstm[1]]) as tf.SymbolicTensor;
+        } else {
+            finalHidden = tf.layers.concatenate().apply([biLstm[0], biLstm[1]]) as tf.SymbolicTensor;
+        }
+        const outputs = tf.layers.dense({ activation: 'softmax', units: numSlotTypes }).apply(finalHidden) as tf.SymbolicTensor;
+        const model = tf.model({ inputs: [classLabelInput, embeddedSentencesInput], outputs });
         model.compile({ loss: 'categoricalCrossentropy', metrics: ['accuracy'], optimizer });
         return model;
     }
@@ -111,7 +95,6 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
             const { maxWordsPerSentence: maxWords, slotsToId } = this.datasetParams;
             const slotTypesLength = Object.keys(slotsToId).length;
             const embeddedSentences = this.embeddingsModel.embed(sentences);
-            const embeddedCharacters = this.embeddingsModel.embedByWordCharacters(sentences);
             const encodedIntent = classificationPred.map(p => {
                 const intentEncoded = new Array(this.datasetParams.intents.length).fill(0) as number[];
                 const idx = this.datasetParams.intents.indexOf(p.intent);
@@ -122,12 +105,11 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
             });
             const intentsFlat = flatMapDeep(encodedIntent);
             const classLabel = tf.tensor2d(intentsFlat, [encodedIntent.length, this.datasetParams.intents.length]);
-            const output = this.model.predict([classLabel, embeddedSentences, embeddedCharacters]) as tf.Tensor<tf.Rank>;
+            const output = this.model.predict([classLabel, embeddedSentences]) as tf.Tensor<tf.Rank>;
             const flattenedPredictions = output.dataSync() as Float32Array;
             output.dispose();
             classLabel.dispose();
             embeddedSentences.dispose();
-            embeddedCharacters.dispose();
             // word predictions for each sentence in the form [sentence, word, slots scores]
             const chunks = chunk(flattenedPredictions, maxWords * slotTypesLength).map(sp => chunk(sp, slotTypesLength));
             return chunks.map(sentencePreds => {
@@ -227,7 +209,6 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
                 tf.oneHot(tf.tensor1d(trainYChunks[index], 'int32'), this.datasetParams.intents.length).asType('float32')
             );
             const embeddedSentenceWords = this.embeddingsModel.embed(xChunk);
-            const embeddedSentenceWordChars = this.embeddingsModel.embedByWordCharacters(xChunk);
             // convert sentence-word-slots from the highest index format like [0,0,0,0,4,4,0,0,3,3] for a sentence
             // to one hot encoded sentences with correct maxWords and batch sizes tensor sizes
             const slotTags: tf.Tensor3D = tf.tidy(() => {
@@ -244,7 +225,7 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
                 y2sentences.forEach(s => s.dispose());
                 return stack;
             });
-            await this.model.fit([intentLabels, embeddedSentenceWords, embeddedSentenceWordChars], slotTags, {
+            await this.model.fit([intentLabels, embeddedSentenceWords], slotTags, {
                 // batchSize: this.config.batchSize,
                 callbacks: { onBatchEnd: tf.nextFrame },
                 epochs,
@@ -253,7 +234,6 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
             });
             intentLabels.dispose();
             embeddedSentenceWords.dispose();
-            embeddedSentenceWordChars.dispose();
             await tf.nextFrame();
             const h = this.model.history.history;
             const c = h.val_loss.length - 1;
@@ -295,9 +275,10 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
     ): Promise<types.IPredictionStats> => {
         const handler = resultsHandler ? resultsHandler : this.defaultResultsLogger;
         const stats: types.IPredictionStats = { correct: 0, wrong: 0 };
-        const testX = chunk(testExamples.testX, this.config.batchSize);
-        const testY = chunk(testExamples.testY, this.config.batchSize);
-        const testY2 = chunk(testExamples.testY2, this.config.batchSize);
+        const batchSize = this.config.batchSize; // this.config.batchSize
+        const testX = chunk(testExamples.testX, batchSize);
+        const testY = chunk(testExamples.testY, batchSize);
+        const testY2 = chunk(testExamples.testY2, batchSize);
         for (const [i, sentences] of testX.entries()) {
             const classifications = testY[i];
             const encodedIntent = sentences.map(

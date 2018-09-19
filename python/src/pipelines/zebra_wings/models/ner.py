@@ -8,20 +8,22 @@ import math
 from keras.utils import to_categorical
 from src.pipelines.zebra_wings.time_series_attention import TimeSeriesAttention
 
+# from src.utils.get_activations import visualize, visualize_layer_output
+
 class NerModel:
     @staticmethod
     def setup(config, dataset_params):
         max_words = dataset_params["maxWordsPerSentence"]
-        drop = config["drop"]
         embedding_dimensions = config["embeddingDimensions"]
         num_filters = config["numFilters"]
         add_attention = config["addAttention"]
+        rnn_units = config["rnnUnits"]
         num_slot_types = len(dataset_params["slotsToId"].keys())
         LEARNING_RATE = 0.0066  # use 1e-4 as default as alternative starting point
         ADAM_BETA_1 = 0.0025
         ADAM_BETA_2 = 0.1
         optimizer = keras.optimizers.Adam(lr=LEARNING_RATE, beta_1=ADAM_BETA_1, beta_2=ADAM_BETA_2)
-        # WORD LEVEL EMBEDDINGS
+        # WORD-NGRAMS LEVEL EMBEDDINGS
         embedded_sentences_input = keras.layers.Input(
             shape=(max_words, embedding_dimensions), name="embedded_words")
         conv_layer_1 = keras.layers.Conv1D(
@@ -31,6 +33,7 @@ class NerModel:
             kernel_initializer='random_normal',
             padding='valid',
             activation='relu',
+            name="nerConv1",
         )(embedded_sentences_input)
         conv_layer_2 = keras.layers.Conv1D(
             num_filters[0],
@@ -38,50 +41,24 @@ class NerModel:
             kernel_initializer='random_normal', # Xavier initialization for tanh, random_normal for relu
             padding='valid',
             activation='tanh', # NOTE: tanh at this layer consistently increases performance
+            name="nerConv2",
         )(conv_layer_1)
-        # CHARACTER LEVEL EMBEDDINGS
-        embedded_characters_input = keras.layers.Input(
-            shape=(max_words, embedding_dimensions), name="embedded_word_characters")
-        conv_c_layer_1 = keras.layers.Conv1D(
-            num_filters[1],
-            1,
-            kernel_initializer='random_normal',
-            padding='valid',
-            activation='relu',
-        )(embedded_characters_input)
-        dropout_c1 = keras.layers.Dropout(drop)(conv_c_layer_1)
-        conv_c_layer_2 = keras.layers.Conv1D(
-            num_filters[1],
-            1,
-            kernel_initializer='random_normal',
-            padding='valid',
-            activation='relu',
-        )(dropout_c1)
         # CONCATENATE BOTH CNN ENCODERS (WORD AND CHAR) WITH THE INPUT AND THE CHAR CNN LAYER 1
         class_label_input = keras.layers.Input(shape=(len(dataset_params['intents']),), name="embedded_intent")
         class_label_repeated = keras.layers.RepeatVector(max_words)(class_label_input)
-        # NOTE: Adding masking when attention is activatted increases performance
+        concated = keras.layers.Concatenate()([
+            class_label_repeated, embedded_sentences_input, conv_layer_2,
+        ])
+        lstm = keras.layers.LSTM(rnn_units, return_sequences=True)
+        bi_lstm = keras.layers.Bidirectional(lstm, merge_mode=None, name='bidi_encoder')(concated)
         if add_attention:
-            sentetnces_mask = keras.layers.Masking(mask_value=0.0)(embedded_sentences_input)
-            conv_layer2_mask = keras.layers.Masking(mask_value=0.0)(conv_layer_2)
-            conv_c_layer2_mask = keras.layers.Masking(mask_value=0.0)(conv_c_layer_2)
-            concated = keras.layers.Concatenate()([
-                class_label_repeated, sentetnces_mask, conv_layer2_mask, conv_c_layer2_mask,
-            ])
+            time_attention = TimeSeriesAttention(name='attention_weight')(bi_lstm[0])
+            final_hidden = keras.layers.Concatenate()([ time_attention, bi_lstm[0], bi_lstm[1] ])
         else:
-            concated = keras.layers.Concatenate()([
-                class_label_repeated, embedded_sentences_input, conv_layer_2, conv_c_layer_2,
-            ])
-        lstm = keras.layers.LSTM(max_words, return_sequences=True)
-        bi_lstm = keras.layers.Bidirectional(lstm, merge_mode='concat', name='bidi_encoder')(concated)
-        if add_attention:
-            time_attention = TimeSeriesAttention(name='attention_weight')(bi_lstm)
-            final_hidden = keras.layers.Concatenate()([ bi_lstm, time_attention ])
-        else:
-            final_hidden = bi_lstm
+            final_hidden = keras.layers.Concatenate()([ bi_lstm[0], bi_lstm[1] ])
         outputs = keras.layers.Dense(num_slot_types, activation='softmax')(final_hidden)
         model = keras.models.Model(
-            inputs=[class_label_input, embedded_sentences_input, embedded_characters_input],
+            inputs=[class_label_input, embedded_sentences_input],
             outputs=outputs,
         )
         model.compile(
@@ -107,7 +84,6 @@ class NerModel:
     def raw_prediction(self, sentences, classification_pred):
         intents = self.__dataset_params['intents']
         embedded_sentences = self.__embeddings_model.embed(sentences)
-        embedded_characters = self.__embeddings_model.embed_by_word_characters(sentences)
         class_label = []
         for p in classification_pred:
             intent_encoded = np.zeros(len(intents))
@@ -120,9 +96,7 @@ class NerModel:
                 intent_encoded[idx] = 1
             class_label.append(intent_encoded)
         intent_labels = np.array(class_label)
-        output = self.__model.predict([
-            intent_labels, embedded_sentences, embedded_characters,
-        ])
+        output = self.__model.predict([ intent_labels, embedded_sentences ])
         ret_predictions = []
         for sentence_preds in output:
             sentence_word_predictions = []
@@ -209,6 +183,15 @@ class NerModel:
         num_slot_types = len(self.__dataset_params["slotsToId"].keys())
         n_batches = math.ceil(
             len(train_dataset['trainX'])/self.__config['batchSize'])
+        # ===   Visualization code block   ===
+        # sentence = 'please remind to me watch real madrid match tomorrow at 9pm'
+        # intent_label = to_categorical(np.array([0], dtype=np.int32), len(self.__dataset_params['intents']))
+        # x_viz = self.__embeddings_model.embed([sentence])
+        # visualize(x_viz, 'embedded_sentence')
+        # visualize_layer_output('nerConv1', m, [intent_label, x_viz], 'ner/conv1-')
+        # visualize_layer_output('nerConv2', m, [intent_label, x_viz], 'ner/conv2-')
+        # visualize(m.predict([intent_label, x_viz]), 'ner/output-')
+        # === END visualization code block ===
         for idx, t_chunk in enumerate(chunks):
             train_x_chunks = t_chunk[0]  # sentences
             train_y_chunks = t_chunk[1]  # intents code per sentence
@@ -217,9 +200,7 @@ class NerModel:
                 break
             intent_labels = to_categorical(np.array(
                 train_y_chunks, dtype=np.int32), len(self.__dataset_params['intents']))
-            embedded_sentence_words = self.__embeddings_model.embed(
-                train_x_chunks)
-            embedded_sentence_word_chars = self.__embeddings_model.embed_by_word_characters(train_x_chunks)
+            embedded_sentence_words = self.__embeddings_model.embed(train_x_chunks)
             y2_sentences = []
             for words_slot_id in train_y2_chunks:
                 slot_ids = np.array(words_slot_id, dtype=np.int32)
@@ -231,7 +212,7 @@ class NerModel:
                 y2_sentences.append(to_categorical(padded_slot_ids, num_slot_types))
             slot_tags = np.stack(y2_sentences)
             m.fit(
-                x=[intent_labels, embedded_sentence_words, embedded_sentence_word_chars],
+                x=[intent_labels, embedded_sentence_words],
                 y=slot_tags,
                 shuffle=True,
                 # batch_size=self.__config['batchSize'], # IMPORTANT: adding batch size here makes the optimization bad
@@ -239,6 +220,11 @@ class NerModel:
                 verbose=0,
                 validation_split=self.__config['trainingValidationSplit'],
             )
+            # ===   Visualization code block   ===
+            # visualize_layer_output('nerConv1', m, [intent_label, x_viz], f'ner/conv1-{idx}')
+            # visualize_layer_output('nerConv2', m, [intent_label, x_viz], f'ner/conv2-{idx}')
+            # visualize(m.predict([intent_label, x_viz]), f'ner/output-{idx}')
+            # === END visualization code block ===
             self.__logger(
                 f'Trained {m.history.epoch[-1]+1} epochs on batch {idx + 1} of {n_batches}')
             self.__logger(

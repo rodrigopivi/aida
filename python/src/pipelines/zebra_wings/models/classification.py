@@ -7,6 +7,7 @@ import numpy as np
 import math
 from keras.utils import to_categorical
 
+# from src.utils.get_activations import visualize, visualize_layer_output
 
 class ClassificationModel:
     @staticmethod
@@ -32,6 +33,7 @@ class ClassificationModel:
             kernel_initializer='random_normal',
             padding='valid',
             activation='relu',
+            name="classConv1",
         )(inputs)
         maxpool1 = keras.layers.MaxPooling1D(
             pool_size=max_words - filter_sizes[0] + 1,
@@ -45,6 +47,7 @@ class ClassificationModel:
             kernel_initializer='random_normal',
             padding='valid',
             activation='relu',
+            name="classConv2",
         )(inputs)
         maxpool2 = keras.layers.MaxPooling1D(
             pool_size=max_words - filter_sizes[1] + 1,
@@ -58,6 +61,7 @@ class ClassificationModel:
             kernel_initializer='random_normal',
             padding='valid',
             activation='relu',
+            name="classConv3",
         )(inputs)
         maxpool3 = keras.layers.MaxPooling1D(
             pool_size=max_words - filter_sizes[2] + 1,
@@ -69,7 +73,7 @@ class ClassificationModel:
         dropout = keras.layers.Dropout(drop)(flat)
         flat_pool_1 = keras.layers.Flatten()(maxpool1)
         concat_for_classification = keras.layers.Concatenate(axis=1)([dropout, flat_pool_1])
-        outputs = keras.layers.Dense(num_classes, activation='softmax')(concat_for_classification)
+        outputs = keras.layers.Dense(num_classes, activation='softmax',)(concat_for_classification)
         model = keras.models.Model(inputs=inputs, outputs=outputs)
         model.compile(
             optimizer=optimizer,
@@ -113,6 +117,15 @@ class ClassificationModel:
         m = self.__model
         intents = self.__dataset_params["intents"]
         num_classes = len(intents)
+        # ===   Visualization code block   ===
+        # sentence = 'please remind to me watch real madrid match tomorrow at 9pm'
+        # x_viz = self.__embeddings_model.embed([sentence])
+        # visualize(x_viz, 'embedded_sentence')
+        # visualize_layer_output('classConv1', m, x_viz, 'class/conv1-')
+        # visualize_layer_output('classConv2', m, x_viz, 'class/conv2-')
+        # visualize_layer_output('classConv3', m, x_viz, 'class/conv3-')
+        # visualize(m.predict(x_viz), 'class/output-')
+        # === END visualization code block ===
         for idx, t_chunk in enumerate(train_data):
             if enough_accuracy_reached:
                 break
@@ -128,6 +141,12 @@ class ClassificationModel:
                 verbose=0,
                 validation_split=self.__config['trainingValidationSplit'],
             )
+            # ===   Visualization code block   ===
+            # visualize_layer_output('classConv1', m, x_viz, f'class/conv1-{idx}')
+            # visualize_layer_output('classConv2', m, x_viz, f'class/conv2-{idx}')
+            # visualize_layer_output('classConv3', m, x_viz, f'class/conv3-{idx}')
+            # visualize(m.predict(x_viz), f'class/output-{idx}')
+            # === END visualization code block ===
             self.__logger(
                 f'Trained {m.history.epoch[-1]+1} epochs on batch {idx + 1} of {n_batches}')
             self.__logger(

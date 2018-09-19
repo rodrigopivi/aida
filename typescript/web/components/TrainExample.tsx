@@ -59,17 +59,17 @@ export default class TrainExample extends React.Component<{}, ITrainExampleState
         const buttonMessage = disableDownload ? (this.state.downloadProgress === 100 ? 'Loading...' : 'Downloading...') : 'Start training';
         return (
             <Row type="flex">
-                <Col span={12}>
+                <Col span={24} sm={{ span: 12 }} >
                     <h2>Train your model from scratch</h2>
                     <p>
-                        The pipeline is composed of two models. Text classification model determines the intent of a sentence, named entity
+                        The pipeline is composed of two trainable models. Text classification model determines the intent of a sentence, named entity
                         recognition model extracts the slots. Once the training finishes, will run the test dataset on them and give you a
                         report, finally your browser will ask you to accept the download of the trained model files.
                     </p>
                     {this.renderIntentsList()}
                     <p>Click 'start training' to continue.</p>
                 </Col>
-                <Col span={12}>
+                <Col span={24} sm={{ span: 12 }} >
                     <Card style={{ marginLeft: '2em', textAlign: 'center' }}>
                         <div>
                             <Progress type="circle" percent={this.state.downloadProgress} />
@@ -82,7 +82,7 @@ export default class TrainExample extends React.Component<{}, ITrainExampleState
                         </div>
                         <br />
                         <p>
-                            Will download the embeddings dictionary (about 1mb compressed), generate the dataset, then train and test the
+                            Will download the embeddings dictionary (about 1mb), generate the dataset, then train and test the
                             models. This process may take several minutes to complete, you will get feedback of the progress but the webpage
                             might feel unresponsive while training.
                         </p>
