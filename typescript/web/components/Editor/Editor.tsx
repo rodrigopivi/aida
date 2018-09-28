@@ -46,8 +46,6 @@ if (typeof window !== `undefined`) {
     ReactJson = require('react-json-view').default;
 }
 
-const timeoutInMs = async (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
 export default class Editor extends React.Component<IEditorProps, IEditorState> {
     public state: IEditorState = {
         error: null,
@@ -87,36 +85,36 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
         });
     }, 300);
 
+    public componentWillMount() {
+        this.loadFromLocalStorage();
+    }
+
     public componentDidMount() {
-        if (!CodeFlask) {
-            return;
-        }
-        this.loadFromLocalStorage(() => {
-            const flask = new CodeFlask('#my-code-editor', {
-                language: 'chatito',
-                lineNumbers: true
-            });
-            flask.addLanguage('chatito', chatitoPrism);
-            flask.onUpdate((code: string) => {
-                if (!this.tabs || !this.tabs[this.state.activeTabIndex]) {
-                    return;
-                }
-                this.codeInputValue = code;
-                this.tabs[this.state.activeTabIndex].value = code;
-                // NOTE: ugly hack to know when codeflask is mounted (it makes 2 calls to update on mount)
-                if (this.editorUpdatesSetupCount < 2) {
-                    this.editorUpdatesSetupCount++;
-                } else {
-                    this.setState({ trainingDataset: {}, testingDataset: {} });
-                    this.debouncedTabDSLValidation();
-                }
-            });
-            if (this.tabs && this.tabs[this.state.activeTabIndex]) {
-                flask.updateCode(this.tabs[this.state.activeTabIndex].value);
-            }
-            flask.setLineNumber();
-            this.codeflask = flask;
+        if (typeof window === `undefined` || !CodeFlask) { return; }
+        const flask = new CodeFlask('#my-code-editor', {
+            language: 'chatito',
+            lineNumbers: true
         });
+        flask.addLanguage('chatito', chatitoPrism);
+        if (this.tabs && this.tabs[this.state.activeTabIndex]) {
+            flask.updateCode(this.tabs[this.state.activeTabIndex].value);
+        }
+        flask.onUpdate((code: string) => {
+            if (!this.tabs || !this.tabs[this.state.activeTabIndex]) {
+                return;
+            }
+            this.codeInputValue = code;
+            this.tabs[this.state.activeTabIndex].value = code;
+            // NOTE: ugly hack to know when codeflask is mounted (it makes 2 calls to update on mount)
+            if (this.editorUpdatesSetupCount < 2) {
+                this.editorUpdatesSetupCount++;
+            } else {
+                this.setState({ trainingDataset: {}, testingDataset: {} });
+                this.debouncedTabDSLValidation();
+            }
+        });
+        flask.setLineNumber();
+        this.codeflask = flask;
     }
 
     public render() {
@@ -148,31 +146,34 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
             <div>
                 <h2>Train a custom assistant</h2>
                 <p>
-                    Chatito, is a language that helps create and maintain datasets. You can improve and customize the assistant accuracy and
-                    knowledge by extending intents, slots and sentences to build a cloud of possible combinations and only pull the examples
-                    needed. Click 'Generate dataset' to continue.
+                    <a href="https://github.com/rodrigopivi/Chatito/blob/master/spec.md" target="_blank" title="Chatito DSL docs">
+                        Chatito
+                    </a>
+                    &nbsp; is a language that helps create and maintain datasets. You can improve and customize the assistant accuracy and
+                    knowledge by extending intents, slots and sentences to build a cloud of possible combinations and only pull the
+                    examples needed. Click 'Generate dataset' to continue.
                 </p>
                 <es.EditorWrapper>
-                    <es.EditorHeader style={{ display: 'block', textAlign: 'right', padding: 16 }}>
-                        <Button onClick={this.onAddFile} style={{ marginRight: 32 }} type="dashed">
+                    <es.EditorHeader style={ { display: 'block', textAlign: 'right', padding: 16 } }>
+                        <Button onClick={ this.onAddFile } style={ { marginRight: 32 } } type="dashed">
                             <Icon type="plus" theme="outlined" />
                             Add new file
                         </Button>
-                        <Button type="primary" onClick={this.onToggleDrawer} disabled={!!s.error}>
+                        <Button type="primary" onClick={ this.onToggleDrawer } disabled={ !!s.error }>
                             <Icon type="play-circle" theme="outlined" />
                             Generate dataset
                         </Button>
                     </es.EditorHeader>
                     <es.EditorHeader>
-                        <es.TabsArea innerRef={this.tabsContainer}>{this.tabs.map(this.renderTabButton)}</es.TabsArea>
+                        <es.TabsArea innerRef={ this.tabsContainer }>{ this.tabs.map(this.renderTabButton) }</es.TabsArea>
                     </es.EditorHeader>
                     <es.CodeStyles id="my-code-editor" />
-                    <es.AlertNotification state={alertState}> {s.error || s.warning || `Correct syntax!`}</es.AlertNotification>
-                    <es.EditorOverlay onClick={this.onCloseDrawer} showDrawer={s.showDrawer || s.generating}>
-                        {loading}
-                        <es.Drawer onClick={e => e.stopPropagation()} showDrawer={s.showDrawer}>
-                            <Icon type="close" theme="outlined" onClick={this.onCloseDrawer} />
-                            {this.renderDatasetPreviewer()}
+                    <es.AlertNotification state={ alertState }> { s.error || s.warning || `Correct syntax!` }</es.AlertNotification>
+                    <es.EditorOverlay onClick={ this.onCloseDrawer } showDrawer={ s.showDrawer || s.generating }>
+                        { loading }
+                        <es.Drawer onClick={ e => e.stopPropagation() } showDrawer={ s.showDrawer }>
+                            <Icon type="close" theme="outlined" onClick={ this.onCloseDrawer } />
+                            { this.renderDatasetPreviewer() }
                         </es.Drawer>
                     </es.EditorOverlay>
                 </es.EditorWrapper>
@@ -186,10 +187,10 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
             return null;
         }
         return [
-            <div style={{ padding: '20px 20px 0 20px', textAlign: 'center' }} key="top_drawer">
-                <Progress type="circle" percent={this.state.downloadProgress} style={{ marginBottom: 20, marginLeft: 30 }} />
+            <div style={ { padding: '20px 20px 0 20px', textAlign: 'center' } } key="top_drawer">
+                <Progress type="circle" percent={ this.state.downloadProgress } style={ { marginBottom: 20, marginLeft: 30 } } />
                 <br />
-                <Button type="primary" onClick={this.trainTestAndSaveModels} disabled={this.state.isDownloading}>
+                <Button type="primary" onClick={ this.trainTestAndSaveModels } disabled={ this.state.isDownloading }>
                     <Icon type="play-circle" theme="outlined" />
                     Start training!
                 </Button>
@@ -201,14 +202,14 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
             <es.BlockWrapper key="bottom_drawer">
                 <es.BlockWrapperTitle>Review the generated training dataset:</es.BlockWrapperTitle>
                 <ReactJson
-                    style={{ padding: 20 }}
-                    src={this.state.trainingDataset}
+                    style={ { padding: 20 } }
+                    src={ this.state.trainingDataset }
                     theme="chalk"
                     iconStyle="square"
-                    enableClipboard={false}
-                    displayDataTypes={false}
-                    name={false}
-                    collapsed={1}
+                    enableClipboard={ false }
+                    displayDataTypes={ false }
+                    name={ false }
+                    collapsed={ 1 }
                 />
             </es.BlockWrapper>
         ];
@@ -218,18 +219,20 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
         const changeTab = () => this.changeTab(i);
         const onCloseTab = this.closerTab(i);
         return (
-            <es.TabButton active={this.state.activeTabIndex === i} key={`tab-${i}`} onClick={changeTab}>
-                {t.title}
-                <Icon type="close" theme="outlined" onClick={onCloseTab} />
+            <es.TabButton active={ this.state.activeTabIndex === i } key={ `tab-${i}` } onClick={ changeTab }>
+                { t.title }
+                <Icon type="close" theme="outlined" onClick={ onCloseTab } />
             </es.TabButton>
         );
     };
     /* ================== Event Handlers ================== */
-    private onCloseDrawer = () => this.setState({ showDrawer: false, trainingDataset: {}, testingDataset: {} });
+    private onCloseDrawer = () => {
+        this.setState({ showDrawer: false, trainingDataset: {}, testingDataset: {} })
+    };
 
     private onAddFile = () => {
         let filename = 'newFile';
-        if (window && window.prompt) {
+        if (typeof window !== 'undefined' && window.prompt) {
             filename = prompt('Please enter the new .chatito file name:', filename) || '';
         }
         if (filename) {
@@ -255,13 +258,12 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
                 return;
             }
             if (validChatitoFiles) {
-                this.setState({ showDrawer: false, generating: true }, async () => {
-                    // dataset generation may take time and block rendering, give some time to render the loading state
-                    await timeoutInMs(80);
-                    await this.generateDataset();
+                this.setState({ showDrawer: false, generating: true }, () => {
+                    // NOTE: using setTimeout to render a loading state before dataset generation may block the ui
+                    setTimeout(this.generateDataset, 600);
                 });
             } else {
-                if (window && window.alert) {
+                if (typeof window !== 'undefined' && window.alert) {
                     window.alert('Please fix the errors or warnings found in the code.');
                 }
             }
@@ -269,12 +271,12 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
     };
     /* ================== Utils ================== */
     private saveToLocalStorage = () => {
-        if (window && localStorage) {
+        if (typeof window !== `undefined` && localStorage) {
             localStorage.setItem('tabs', JSON.stringify(this.tabs));
         }
     };
     private loadFromLocalIfPresent = (key: string, parseAsJSON: boolean) => {
-        if (window && localStorage) {
+        if (typeof window !== `undefined` && localStorage) {
             try {
                 const item = localStorage.getItem(key);
                 if (!parseAsJSON) {
@@ -293,14 +295,13 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
             }
         }
     };
-    private loadFromLocalStorage = (cb: () => void) => {
-        if (window && localStorage) {
+    private loadFromLocalStorage = () => {
+        if (typeof window !== `undefined` && localStorage) {
             const localTabs = this.loadFromLocalIfPresent('tabs', true);
             this.tabs = localTabs ? localTabs : this.props.tabs;
         } else {
             this.tabs = this.props.tabs;
         }
-        cb();
     };
     private changeTab = (i: number, cb?: () => void) => {
         if (!this.codeflask) {
@@ -346,7 +347,7 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
                 return {
                     warning: `Warning: Limit the number of generated examples for intents. E.g.: %[${
                         intentsWithoutLimit[0].key
-                    }]('training': '100')`
+                        }]('training': '100')`
                 };
             }
             return null;
@@ -384,7 +385,7 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
                 this.setState({ trainingDataset: {}, testingDataset: {}, showDrawer: false, generating: false }, () => {
                     this.changeTab(i, () =>
                         this.setState({ error: e.message }, () => {
-                            if (window && window.alert) {
+                            if (typeof window !== 'undefined' && window.alert) {
                                 window.alert(`Please fix error: ${e.message}`);
                             }
                         })
@@ -407,7 +408,7 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
                         const totalLength = progressEvent.lengthComputable
                             ? progressEvent.total
                             : progressEvent.target.getResponseHeader('content-length') ||
-                              progressEvent.target.getResponseHeader('x-decompressed-content-length');
+                            progressEvent.target.getResponseHeader('x-decompressed-content-length');
                         if (totalLength !== null) {
                             total += totalLength;
                             progress += Math.round((progressEvent.loaded * 100) / total);
@@ -451,15 +452,17 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
             maxWordsPerSentence,
             slotsToId
         } as IDatasetParams;
-        await timeoutInMs(200); // give some time for the state update after the model setup (before the gpu blocks)
-        this.setState({
-            trainingParams,
-            testingParams,
-            datasetParams,
-            embeddingsAndTrainingDatasetLoaded: true,
-            ngramToIdDictionary,
-            pretrainedNGramVectors,
-            datasetStats: stats
-        });
+        // NOTE: using setTimeout to render a loading state before dataset generation may block the ui
+        setTimeout(() => {
+            this.setState({
+                trainingParams,
+                testingParams,
+                datasetParams,
+                embeddingsAndTrainingDatasetLoaded: true,
+                ngramToIdDictionary,
+                pretrainedNGramVectors,
+                datasetStats: stats
+            });
+        }, 200);
     };
 }

@@ -15,16 +15,16 @@ module.exports = {
             options: {
                 path: `${__dirname}/../`,
                 ignore: ['!(readme.md|docs/*|typescript/examples/*.chatito)'],
-                name: "markdown-pages",
+                name: 'markdown-pages',
             },
         },
         {
             resolve: `gatsby-transformer-remark`,
             options: {
-              plugins: [
-                "gatsby-remark-copy-linked-files",
-                {
-                  resolve: `gatsby-remark-images`,
+                plugins: [
+                    'gatsby-remark-copy-linked-files',
+                    {
+                        resolve: `gatsby-remark-images`,
                         options: {
                             // It's important to specify the maxWidth (in pixels) of
                             // the content container as this plugin uses this as the
@@ -33,6 +33,16 @@ module.exports = {
                         },
                     },
                 ],
+            },
+        },
+        {
+            resolve: 'gatsby-plugin-google-analytics',
+            options: {
+                trackingId: 'UA-126674236-1',
+                head: false,
+                anonymize: true,
+                respectDNT: true,
+                cookieDomain: 'aida.dor.ai',
             },
         },
         'read-chatito-files',
