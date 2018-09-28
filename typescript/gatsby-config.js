@@ -14,7 +14,7 @@ module.exports = {
             resolve: `gatsby-source-filesystem`,
             options: {
                 path: `${__dirname}/../`,
-                ignore: ['!(readme.md|docs/*)'],
+                ignore: ['!(readme.md|docs/*|typescript/examples/*.chatito)'],
                 name: "markdown-pages",
             },
         },
@@ -35,6 +35,7 @@ module.exports = {
                 ],
             },
         },
+        'read-chatito-files',
         'gatsby-plugin-react-helmet',
         'gatsby-plugin-typescript',
         'gatsby-plugin-styled-components'

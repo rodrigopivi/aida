@@ -15,7 +15,9 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
         const optimizer = tf.train.adam(LEARNING_RATE, ADAM_BETA_1, ADAM_BETA_2);
         // WORD-NGRAMS LEVEL EMBEDDINGS
         const embeddedSentencesInput = tf.input({
-            dtype: 'float32', shape: [maxWords, embeddingDimensions], name: 'embedded_words'
+            dtype: 'float32',
+            shape: [maxWords, embeddingDimensions],
+            name: 'embedded_words'
         });
         const convLayer1 = tf.layers
             .conv1d({
@@ -40,15 +42,15 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
             .apply(convLayer1) as tf.SymbolicTensor;
         // CONCATENATE BOTH CNN ENCODERS (WORD AND CHAR) WITH THE INPUT AND THE CHAR CNN LAYER 1
         const classLabelInput = tf.input({
-            dtype: 'float32', shape: [datasetParams.intents.length], name: 'embedded_intent'
+            dtype: 'float32',
+            shape: [datasetParams.intents.length],
+            name: 'embedded_intent'
         });
         const classLabelRepeated = tf.layers.repeatVector({ n: maxWords }).apply(classLabelInput) as tf.SymbolicTensor;
-        const concated = tf.layers.concatenate().apply([
-            classLabelRepeated, embeddedSentencesInput, convLayer2,
-        ]);
+        const concated = tf.layers.concatenate().apply([classLabelRepeated, embeddedSentencesInput, convLayer2]);
         const biLstm = tf.layers
             .bidirectional({
-                layer: tf.layers.lstm({ units: rnnUnits, returnSequences: true, name: 'bidi_encoder'}) as tf.RNN
+                layer: tf.layers.lstm({ units: rnnUnits, returnSequences: true, name: 'bidi_encoder' }) as tf.RNN
             })
             .apply(concated) as tf.SymbolicTensor[];
         let finalHidden: tf.SymbolicTensor | null = null;

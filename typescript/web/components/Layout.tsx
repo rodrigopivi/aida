@@ -5,46 +5,42 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { Logo } from './Logo';
 
-const { Header, Content, Footer } = Layout;
+const { Content, Footer } = Layout;
 
 const overviewRouteRE = /^\/overview(\/.*)?$/i;
 const demoRouteRE = /^\/demo(\/.*)?$/i;
 const trainRouteRE = /^\/train(\/.*)?$/i;
 
-const StyledContent = styled(Content)`
+export const InnerContent = styled(Content)`
     > p {
         text-align: justify;
     }
     background: #fcfcfc;
-    padding: 48px 48px 48px 72px;
-    min-height: 280px;
+    min-height: '95vh';
 `;
 
-export default class MainLayout extends React.Component<any, {}> {
+export const InnerPaddedContent = styled(InnerContent)`
+    padding: 28px 28px 28px 52px;
+`;
+
+export default class MainLayout extends React.Component<{ location: { pathname: string }; addPadding?: boolean }, {}> {
     public render() {
         let defaultSelectedKeys = '-1';
         if (overviewRouteRE.test(this.props.location.pathname)) {
             defaultSelectedKeys = '0';
-        } else if (demoRouteRE.test(this.props.location.pathname)) {
-            defaultSelectedKeys = '1';
         } else if (trainRouteRE.test(this.props.location.pathname)) {
+            defaultSelectedKeys = '1';
+        } else if (demoRouteRE.test(this.props.location.pathname)) {
             defaultSelectedKeys = '2';
         }
+        const IC = this.props.addPadding ? InnerPaddedContent : InnerContent;
         return (
             <Layout style={{ minHeight: '100vh' }}>
-                <Header style={{ background: '#fcfcfc', padding: 0, display: 'flex' }}>
-                    <Logo style={{ textAlign: 'right', width: 200, paddingLeft: 24, paddingRight: 24 }} className="static">
-                        <Link to="/">{`< Aida />`}</Link>
-                    </Logo>
-                    <div style={{ flex: 1 }} />
-                    <div style={{ padding: '0 48px 0 24px', display: 'inline-block', textAlign: 'right', float: 'right' }}>
-                        <a href="https://github.com/rodrigopivi/aida" title="Aida" style={{ fontSize: 26 }}>
-                            <Icon type="github" />
-                        </a>
-                    </div>
-                </Header>
                 <Layout style={{ flexDirection: 'row' }}>
                     <Layout.Sider width={200} breakpoint="lg" collapsedWidth="0" theme="light" style={{ backgroundColor: '#fcfcfc' }}>
+                        <Logo style={{ textAlign: 'center', width: 200, padding: 24 }} className="static">
+                            <Link to="/">{`< Aida />`}</Link>
+                        </Logo>
                         <Menu theme="light" mode="inline" defaultSelectedKeys={[defaultSelectedKeys]} style={{ background: '#fcfcfc' }}>
                             <Menu.Item key="0">
                                 <Link to="/overview">
@@ -53,21 +49,26 @@ export default class MainLayout extends React.Component<any, {}> {
                                 </Link>
                             </Menu.Item>
                             <Menu.Item key="1">
+                                <Link to="/train">
+                                    <Icon type="right-circle-o" />
+                                    Train assistant
+                                </Link>
+                            </Menu.Item>
+                            <Menu.Item key="2">
                                 <Link to="/demo">
                                     <Icon type="right-circle-o" />
                                     Demo
                                 </Link>
                             </Menu.Item>
-                            <Menu.Item key="2">
-                                <Link to="/train">
-                                    <Icon type="right-circle-o" />
-                                    Train your own
-                                </Link>
-                            </Menu.Item>
                         </Menu>
+                        <div style={{ padding: '24px', textAlign: 'center' }}>
+                            <a href="https://github.com/rodrigopivi/aida" title="Aida" style={{ fontSize: 26 }}>
+                                <Icon type="github" />
+                            </a>
+                        </div>
                     </Layout.Sider>
                     <Layout style={{ padding: '24px 0 0 24px' }}>
-                        <StyledContent>{this.props.children}</StyledContent>
+                        <IC>{this.props.children}</IC>
                         <Footer style={{ textAlign: 'center' }}>Aida © 2018 Rodrigo Pimentel</Footer>
                     </Layout>
                 </Layout>

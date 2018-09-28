@@ -39,7 +39,7 @@ export default class LoadPreTrainedExample extends React.Component<{}, ILoadPreT
 
     public render() {
         if (this.state.modelsLoaded && this.pipeline) {
-            return <TrainedPipelineTestInput pipeline={this.pipeline} />;
+            return <TrainedPipelineTestInput pipeline={this.pipeline}>{this.renderIntentsList()}</TrainedPipelineTestInput>;
         }
         const disableDownload = this.state.isDownloading || this.state.downloadProgress === 100;
         const buttonMessage = disableDownload
@@ -121,6 +121,36 @@ export default class LoadPreTrainedExample extends React.Component<{}, ILoadPreT
             </Row>
         );
     }
+
+    private renderIntentsList = () => {
+        return (
+            <div>
+                <p>The pipeline was trained on this list of intents and slots per intent:</p>
+                <div>
+                    <ul>
+                        <li>greet</li>
+                        <li>bye</li>
+                        <li>affirmative</li>
+                        <li>negative</li>
+                        <li>wtf (detect insults and out of context stuff)</li>
+                        <li>playMusic -> slots: artist, song</li>
+                        <li>addEventToCalendar -> slots: calendarEvent, dateTime</li>
+                    </ul>
+                </div>
+                <p>
+                    You can try a sentence like 'please remind to me watch real madrid match tomorrow at 9pm' or 'play new york new york
+                    from frank sinatra'
+                </p>
+                <p>
+                    Check the{' '}
+                    <a target="_blank" href="https://github.com/rodrigopivi/aida/tree/master/typescript/examples/en/intents">
+                        chatito definition files at the github repo
+                    </a>
+                    &nbsp; for more details about the training examples generation.
+                </p>
+            </div>
+        );
+    };
 
     private downloadsTrainedModel = async (backend: 'web' | 'node' | 'keras') => {
         const modelsUrls = {

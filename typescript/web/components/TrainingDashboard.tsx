@@ -28,12 +28,13 @@ const LoggerFeed = styled.div`
     margin-bottom: 20px;
 `;
 
-interface ITrainingDashboardProps {
+export interface ITrainingDashboardProps {
     datasetParams: types.IDatasetParams;
     trainDataset: types.ITrainingParams;
     testDataset: types.ITestingParams;
     ngramToIdDictionary: types.IPretrainedDictionary['NGRAM_TO_ID_MAP'];
     pretrainedNGramVectors: types.IPretrainedDictionary['PRETRAINED'];
+    datasetStats: { intent: string; training: number; testing: number }[];
 }
 
 interface ITrainingDashboardState {
@@ -100,7 +101,16 @@ export default class TrainingDashboard extends React.Component<ITrainingDashboar
                         type="success"
                         style={{ marginBottom: 20 }}
                     />
-                    <TrainedPipelineTestInput pipeline={this.pipeline} />
+                    <TrainedPipelineTestInput pipeline={this.pipeline}>
+                        <p>The pipeline was trained and tested on your custom dataset:</p>
+                        <ul>
+                            {this.props.datasetStats.map((s, i) => (
+                                <li key={`int-${i}`}>
+                                    <strong>{s.intent}</strong> ({s.training} training and {s.testing} testing examples).
+                                </li>
+                            ))}
+                        </ul>
+                    </TrainedPipelineTestInput>
                 </>
             );
         }

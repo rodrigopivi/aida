@@ -4,8 +4,6 @@ export type ILineChartDataValues = Array<{ batch: number; validationLoss: any; t
 // TODO: Print a line chart
 export default class AidaLineChart extends React.Component<{ dataValues: ILineChartDataValues }, any> {
     public render() {
-        return (
-            <div />
-        );
+        return <div />;
     }
 }

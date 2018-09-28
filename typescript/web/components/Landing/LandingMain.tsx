@@ -63,7 +63,7 @@ export default function LandingMain() {
                             <span key="1">Your application can understand natural language in house.</span>
                             <br />
                             <span key="2">
-                            Use open source AI models that can train from the browser using javascript or python and can run everywhere.
+                                Use open source AI models that can train from the browser using javascript or python and can run everywhere.
                             </span>
                             <br />
                             <Link to="/overview" key="3">

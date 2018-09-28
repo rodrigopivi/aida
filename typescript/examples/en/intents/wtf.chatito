@@ -1,3 +1,4 @@
+// Detect insults and out of context sentences
 %[wtf]('training': '300', 'testing': '100')
     ~[noise] ~[rudeness?] ~[rudeness?] ~[noise?] ~[rudeness?] ~[noise?]
     ~[noise]~[noise?]~[noise?]

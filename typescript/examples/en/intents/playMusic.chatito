@@ -1,3 +1,4 @@
+// Play music by artist and/or song
 %[playMusic]('training': '800', 'testing': '500')
     ~[hi?] ~[playASongOfArtist] @[artist] ~[please?]
     ~[please?] ~[playSong] @[song] ~[fromAuthor] @[artist]
@@ -5,112 +6,217 @@
     ~[playSong] @[song]
     ~[please?] ~[playMusic]
 
+// The list of artists and songs was taken from this Billboard top 2017 wikipedia page:
+// https://en.wikipedia.org/wiki/Billboard_Year-End_Hot_100_singles_of_2017
+// This is the javascript code used to scrap the list from the browser:
+// const Artists = new Set([]);
+// const Songs = new Set([]);
+// for (const el of $('.jquery-tablesorter tbody tr')) {
+//     const tds = $(el).find('td');
+//     Songs.add(tds[0].innerText.toLowerCase().slice(1, -1));
+//     Artists.add(tds[1].innerText.toLowerCase());
+// }
+// let allArtists = '\n';
+// [...Artists].forEach(s => { allArtists = `${allArtists}${s}\n` })
+// let allSongs = '\n';
+// [...Songs].forEach(s => { allSongs = `${allSongs}${s}\n` })
+// console.log(allArtists);
+// console.log(allSongs);
 @[artist]
-    the beatles
-    daft punk
-    incubus
-    infected mushroom
-    savant
-    astrix
-    camila cabello
-    drake
-    savage garden
-    bob marley
-    sublime
-    artic monkeys
-    no religion
-    craddle of filth
-    sum 45
-    korn
-    beethoven
-    mozart
-    eminem
-    taylor swift
-    rihanna
-    kanye west
-    adele
-    lady gaga
-    zedd
-    bob dylan
+    ed sheeran
+    luis fonsi and daddy yankee featuring justin bieber
     bruno mars
-    justin beiber
-    britney spears
-    christina aguilera
-    growlers
-    rancid
+    kendrick lamar
+    the chainsmokers and coldplay
+    migos featuring lil uzi vert
+    the chainsmokers featuring halsey
+    sam hunt
+    imagine dragons
+    post malone featuring quavo
+    james arthur
+    dj khaled featuring justin bieber, quavo, chance the rapper and lil wayne
+    lil uzi vert
+    future
+    french montana featuring swae lee
+    zedd and alessia cara
+    dj khaled featuring rihanna and bryson tiller
+    rae sremmurd featuring gucci mane
+    the weeknd featuring daft punk
+    khalid
+    charlie puth
+    shawn mendes
+    cardi b
+    childish gambino
+    zayn and taylor swift
+    kygo and selena gomez
+    kyle featuring lil yachty
+    julia michaels
+    alessia cara
+    logic featuring alessia cara and khalid
+    niall horan
+    rihanna
+    big sean
+    liam payne featuring quavo
+    drake
+    maroon 5 featuring kendrick lamar
+    taylor swift
+    machine gun kelly and camila cabello
+    the chainsmokers
+    ariana grande featuring nicki minaj
+    clean bandit featuring sean paul and anne-marie
+    portugal. the man
+    dj snake featuring justin bieber
+    demi lovato
+    21 savage
+    justin timberlake
+    j balvin and willy william featuring beyoncé
+    migos
+    yo gotti featuring nicki minaj
+    kodak black
+    post malone featuring 21 savage
+    brett young
+    twenty one pilots
+    halsey
+    aminé
+    ayo & teo
+    zay hilfigerrr & zayion mccall
+    rae sremmurd
+    kendrick lamar featuring rihanna
+    kesha
+    travis scott featuring kendrick lamar
+    maroon 5 featuring future
+    dram featuring lil yachty
+    calvin harris featuring frank ocean and migos
+    kane brown featuring lauren alaina
+    katy perry featuring skip marley
+    calvin harris featuring pharrell williams, katy perry and big sean
+    jon bellion
+    luke combs
+    sam smith
+    playboi carti
+    sza featuring travis scott
+    a boogie wit da hoodie featuring kodak black
+    hailee steinfeld and grey featuring zedd
+    gucci mane featuring drake
+    pink
+    jason derulo featuring nicki minaj and ty dolla sign
+    migos featuring gucci mane
+    harry styles
+    adele
+    miley cyrus
+    marian hill
+    cheat codes featuring demi lovato
+    gucci mane featuring migos
+    dustin lynch
+    yfn lucci featuring pnb rock
+    camila cabello featuring young thug
+    maroon 5 featuring sza
+    blackbear
+    xxxtentacion
+    keith urban featuring carrie underwood
+
 
 @[song]
-    hey jude
-    yesterday
-    yellow submarine
-    one more time
-    discover
-    something about us
-    drive
-    anna molly
-    are you in
-    gods plan
-    one dance
+    shape of you
+    despacito
+    that's what i like
+    humble
+    something just like this
+    bad and boujee
+    closer
+    body like a back road
+    believer
+    congratulations
+    say you won't let go
+    i'm the one
+    xo tour llif3
+    mask off
+    unforgettable
+    24k magic
+    stay
+    wild thoughts
+    black beatles
+    starboy
+    location
+    attention
+    there's nothing holdin' me back
+    bodak yellow (money moves)
+    redbone
+    i don't wanna live forever
+    it ain't me
+    ispy
+    issues
+    scars to your beautiful
+    1-800-273-8255
+    slow hands
+    love on the brain
+    i feel it coming
+    bounce back
+    strip that down
+    fake love
+    don't wanna know
+    look what you made me do
+    castle on the hill
+    bad things
+    paris
+    side to side
+    rockabye
+    feel it still
+    let me love you
+    sorry not sorry
+    bank account
+    can't stop the feeling!
+    mi gente
+    thunder
+    t-shirt
+    rake it up
+    mercy
+    tunnel vision
+    rockstar
+    in case you didn't know
+    heathens
+    now or never
+    caroline
+    rolex
+    dna
+    juju on that beat (tz anthem)
+    swang
+    passionfruit
+    loyalty
+    praying
+    goosebumps
+    cold
+    broccoli
+    slide
+    what ifs
+    chained to the rhythm
+    feels
+    all time low
+    hurricane
+    too good at goodbyes
+    young dumb & broke
+    magnolia
+    love galore
+    drowning
+    starving
+    both
+    what about us
+    swalla
+    slippery
+    sign of the times
+    water under the bridge
+    malibu
+    down
+    no promises
+    treat you better
+    i get the bag
+    small town boy
+    everyday we lit
     havana
-    beyond the senses
-    freak on a leash
-    nice for what
-    the middle
-    never be the same
-    perfect
-    finesse
-    blowing in the wind
-    someone like you
-    poker face
-    love test
-    womanizer
-    fall back down
-    vivir la vida
-    la macarena
-    matador
-    baracunata
-    mr pmosh
-    la balada del diablo y la muerte
-    whats my age again
-    sin ti
-    corazon
-    criminal
-    escapate conmigo
-    bella y sensual
-    olha a explosao
-    loco
-    machika
-    me rehuso
-    tratame suavemente
-    te bote
-    dura
-    la amo
-    dejala que vuelva
-    dembow
-    amantes
-    ambiente
-    unica
-    sin tu amor
-    al ramerio
-    el perdedor
-    great spiritt
-    state of trance
-    waiting for the night
-    space man
-    young again
-    wake me up
-    levels
-    mad love
-    2u
-    animals
-    in the name of love
-    boom
-    adagio for strings
-    ohh baby
-    space ibiza
-    with or without you
-    one
-    eleven eleven
+    what lovers do
+    do re mi
+    look at me!
+    the fighter
 
 
 ~[fromAuthor]

@@ -1,4 +1,5 @@
 
+// Add custom events to a calendar by start date/date-time
 %[addEventToCalendar]('training': '1000', 'testing': '500')
     ~[please?] ~[add to calendar] @[calendarEvent] ~[at] @[dateTime]
     ~[set the] @[calendarEvent#alarm] ~[at?] @[dateTime]

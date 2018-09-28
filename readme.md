@@ -18,7 +18,13 @@
 
 <h3 align="center">
   <a href="https://aida.dor.ai">
-    Try it online!
+    Main
+  </a> | 
+  <a href="https://aida.dor.ai/train">
+    Train your own assistant
+  </a> | 
+  <a href="https://aida.dor.ai/demo">
+    Live demo
   </a>
 </h3>
 
@@ -29,7 +35,7 @@
 <img alt="Become a Patron!" src="https://c5.patreon.com/external/logo/become_a_patron_button.png" width="170" />
 </a>
 <br/><br/>
-Designing and maintaining chatito takes time and effort, if it was usefull for you, please consider making a donation and share the abundance! :)
+Designing and maintaining aida takes time and effort, if it was usefull for you, please consider making a donation and share the abundance! :)
 </p>
 
 <hr />

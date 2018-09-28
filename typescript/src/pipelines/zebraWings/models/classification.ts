@@ -15,7 +15,9 @@ export default class ClassificationModel extends types.PipelineModel implements 
         const optimizer = tf.train.adam(LEARNING_RATE, ADAM_BETA_1, ADAM_BETA_2);
         // Layer 1: Convolution + max pool
         const input = tf.input({
-            dtype: 'float32', shape: [maxWords, config.embeddingDimensions], name: 'embedded_words'
+            dtype: 'float32',
+            shape: [maxWords, config.embeddingDimensions],
+            name: 'embedded_words'
         });
         const convLayer1 = tf.layers
             .conv1d({
@@ -135,7 +137,7 @@ export default class ClassificationModel extends types.PipelineModel implements 
                         sentence: s
                     })
                 );
-                sentencePreds.sort((a: any, b: any) => (a.confidence > b.confidence ? -1 : 1));
+                sentencePreds.sort((a, b) => (a.confidence > b.confidence ? -1 : 1));
                 prediction.push(sentencePreds[0]);
             });
         });

@@ -40,7 +40,7 @@ export const defaultPipelineDefinition: types.IPipelineDefinition = {
             epochs: 5,
             lowConfidenceThreshold: 0.2,
             numFilters: [128, 128],
-            rnnUnits: 100,
+            rnnUnits: 100
         }
     }
 };
@@ -109,7 +109,14 @@ export class AidaPipeline {
         this.logger.log('START TRAINING PIPELINE MODELS!');
         this.logger.log('==================================================================================================');
         await this.classificationModel.train(trainDataset);
-        await this.nerModel.train(trainDataset);
+        const slotsLength = Object.keys(this.datasetParams.slotsToId).length;
+        // NOTE: only train the ner model if there are slots in the training params
+        if (slotsLength >= 2) {
+            await this.nerModel.train(trainDataset);
+        } else {
+            this.logger.log('SKIPPING NER MODEL (NO SLOTS FOUND)!');
+            this.logger.log('==================================================================================================');
+        }
         this.logger.log('FINISHED TRAINING PIPELINE MODELS!');
         this.logger.log('==================================================================================================');
     };
@@ -118,13 +125,17 @@ export class AidaPipeline {
         this.logger.log('START TESTING PIPELINE MODELS!');
         this.logger.log('==================================================================================================');
         const classificationStats = await this.classificationModel.test(testDataset);
-        const nerStats = await this.nerModel.test(testDataset);
+        // NOTE: only use the ner model if there are slots in the training params
+        const slotsLength = Object.keys(this.datasetParams.slotsToId).length;
+        const nerStats = slotsLength >= 2 ? await this.nerModel.test(testDataset) : { correct: 0, wrong: 0 };
         return { classificationStats, nerStats };
     };
 
     public predict = (sentences: string[]) => {
         const classification = this.classificationModel.predict(sentences);
-        const ner = this.nerModel.predict(sentences, classification);
+        // NOTE: only use the ner model if there are slots in the training params
+        const slotsLength = Object.keys(this.datasetParams.slotsToId).length;
+        const ner: types.ISlotReducer[] = slotsLength >= 2 ? this.nerModel.predict(sentences, classification) : [];
         return { classification, ner };
     };
 
@@ -132,7 +143,11 @@ export class AidaPipeline {
         this.logger.log('SAVING PIPELINE MODELS!');
         this.logger.log('==================================================================================================');
         await this.classificationModel.tfModel().save(cfg.classificationPath);
-        await this.nerModel.tfModel().save(cfg.nerPath);
+        const slotsLength = Object.keys(this.datasetParams.slotsToId).length;
+        // NOTE: only download the ner model if there are slots
+        if (slotsLength >= 2) {
+            await this.nerModel.tfModel().save(cfg.nerPath);
+        }
         await this.embeddingsModel.tfModel().save(cfg.embeddingPath);
     };
 }

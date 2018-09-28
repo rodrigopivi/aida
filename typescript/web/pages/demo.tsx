@@ -5,7 +5,7 @@ import LoadPreTrainedExample from '../components/LoadPreTrainedExample';
 
 export default ({ location }: any) => {
     return (
-        <Layout location={location} style={{ minHeight: '95vh' }}>
+        <Layout location={location} addPadding>
             <DefaultHeader />
             <LoadPreTrainedExample />
         </Layout>

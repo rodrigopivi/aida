@@ -21,39 +21,12 @@ export default class TrainedPipelineTestInput extends React.Component<IPipelineT
         disabled: false,
         outTextContent: null
     };
-    public renderIntentsList = () => (
-        <div>
-            <p>The pipeline was trained on this list of intents and slots per intent:</p>
-            <div>
-                <ul>
-                    <li>greet</li>
-                    <li>bye</li>
-                    <li>affirmative</li>
-                    <li>negative</li>
-                    <li>wtf (detect insults and out of context stuff)</li>
-                    <li>playMusic -> slots: artist, song</li>
-                    <li>addEventToCalendar -> slots: calendarEvent, dateTime</li>
-                </ul>
-            </div>
-            <p>
-                You can try a sentence like 'please remind to me watch real madrid match tomorrow at 9pm' or 'play new york new york
-                from frank sinatra'
-            </p>
-            <p>
-                Check the{' '}
-                <a target="_blank" href="https://github.com/rodrigopivi/aida/tree/master/typescript/intents">
-                    chatito definition files at the github repo
-                </a>
-                &nbsp; for more details about the training examples generation.
-            </p>
-        </div>
-    );
 
     public render() {
         return (
             <div>
                 <Row type="flex" justify="center">
-                    <Col span={24} sm={{ span: 12 }} >
+                    <Col span={24} sm={{ span: 12 }}>
                         <Card title="Test trained pipeline:" style={{ minHeight: '100%' }}>
                             <p>
                                 <SearchInput
@@ -65,10 +38,10 @@ export default class TrainedPipelineTestInput extends React.Component<IPipelineT
                                     disabled={this.state.disabled}
                                 />
                             </p>
-                            {this.renderIntentsList()}
+                            {this.props.children || null}
                         </Card>
                     </Col>
-                    <Col span={24} sm={{ span: 12 }} >
+                    <Col span={24} sm={{ span: 12 }}>
                         <Card title="Pipeline output:" style={{ minHeight: '100%' }}>
                             <pre style={{ marginTop: '2em' }}>{this.state.outTextContent || ''}</pre>
                         </Card>

@@ -97,20 +97,32 @@ class AidaPipeline:
 
     def train(self, train_dataset):
         self.__classification_model.train(train_dataset)
-        self.__ner_model.train(train_dataset)
+        # NOTE: only train the ner model if there are slots in the training params
+        slots_length = len(self.__dataset_params["slotsToId"].keys())
+        if slots_length >= 2:
+            self.__ner_model.train(train_dataset)
 
     def test(self, test_dataset):
         classification_stats = self.__classification_model.test(test_dataset)
-        ner_stats = self.__ner_model.test(test_dataset)
+        # NOTE: only use the ner model if there are slots in the training params
+        slots_length = len(self.__dataset_params["slotsToId"].keys())
+        ner_stats = { 'correct': 0, 'wrong': 0 }
+        if slots_length >= 2:
+            ner_stats = self.__ner_model.test(test_dataset)
         return {'classificationStats': classification_stats, 'nerStats': ner_stats}
 
     def predict(self, sentences):
         classification = self.__classification_model.predict(sentences)
-        ner = self.__ner_model.predict(sentences, classification)
+        # NOTE: only use the ner model if there are slots in the training params
+        slots_length = len(self.__dataset_params["slotsToId"].keys())
+        ner = self.__ner_model.predict(sentences, classification) if slots_length >= 2 else []
         return {'classification': classification, 'ner': ner}
 
     def save(self, cfg):
         self.__classification_model.keras_model().save(
             cfg['classificationPath'])
-        self.__ner_model.keras_model().save(cfg['nerPath'])
+        slots_length = len(self.__dataset_params["slotsToId"].keys())
+        # NOTE: only save the ner model if there are slots
+        if slots_length >= 2:
+            self.__ner_model.keras_model().save(cfg['nerPath'])
         self.__embeddings_model.keras_model().save(cfg['embeddingPath'])

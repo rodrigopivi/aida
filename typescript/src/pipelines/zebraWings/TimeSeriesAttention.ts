@@ -21,9 +21,15 @@ export class TimeSeriesAttention extends tf.layers.Layer {
     public build(inputShape: tf.Shape): void {
         const dimensions = inputShape[2];
         const timed = tf.sequential({ name: 'per_time_step' });
-        timed.add(tf.layers.dense({
-            inputShape: [dimensions], kernelInitializer: 'zeros', units: dimensions, activation: 'softmax', name: 'att_dense1',
-        }));
+        timed.add(
+            tf.layers.dense({
+                inputShape: [dimensions],
+                kernelInitializer: 'zeros',
+                units: dimensions,
+                activation: 'softmax',
+                name: 'att_dense1'
+            })
+        );
         timed.add(tf.layers.dense({ units: dimensions, kernelInitializer: 'glorotNormal', activation: 'tanh', name: 'att_dense2' }));
         this.timed = tf.layers.timeDistributed({ layer: timed, name: 'att_td' });
         this.timed.build(inputShape);
