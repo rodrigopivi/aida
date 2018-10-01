@@ -8,10 +8,6 @@
 </h1>
 
 <p align="center">
-  <a href="https://aida.dor.ai" title="License">
-    <img alt="License" src="https://img.shields.io/github/license/rodrigopivi/aida.svg" width="100" />
-  </a>
-  <br />
   <strong>Your application can understand natural language in house.</strong><br>
   Use open source AI models that can train from the browser using javascript or python and can run everywhere.
 </p>
@@ -30,19 +26,9 @@
 
 <hr />
 <br/>
-<p align="center">
-<a href="https://www.patreon.com/bePatron?u=13643440" title="Become a Patron!">
-<img alt="Become a Patron!" src="https://c5.patreon.com/external/logo/become_a_patron_button.png" width="170" />
-</a>
-<br/><br/>
-Designing and maintaining aida takes time and effort, if it was usefull for you, please consider making a donation and share the abundance! :)
-</p>
-
-<hr />
-<br/>
 
 <div>
-  <h1>Getting started</h1>
+  <h2>Getting started</h2>
   <h3>Aida is a library that helps you build conversational user experiences with this concepts in mind:</h3>
   <ul>
       <li>
@@ -122,6 +108,9 @@ Read the [technical overview documentation](https://aida.dor.ai/overview).
 ## TODO
 
 - [Universal Language Model Fine-tuning for Text Classification](https://arxiv.org/abs/1801.06146) [(blog post)](http://nlp.fast.ai/classification/2018/05/15/introducting-ulmfit.html)- ULMFiT is the current state of the art for NLP tasks.
+
+# [Donate](https://www.patreon.com/bePatron?u=13643440)
+Designing and maintaining aida takes time and effort, if it was usefull for you, please consider making a donation and share the abundance. [Become a Patron!](https://www.patreon.com/bePatron?u=13643440)
 
 # Author and maintainer
 Rodrigo Pimentel
