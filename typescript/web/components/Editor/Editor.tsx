@@ -90,7 +90,9 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
     }
 
     public componentDidMount() {
-        if (typeof window === `undefined` || !CodeFlask) { return; }
+        if (typeof window === `undefined` || !CodeFlask) {
+            return;
+        }
         const flask = new CodeFlask('#my-code-editor', {
             language: 'chatito',
             lineNumbers: true
@@ -150,30 +152,30 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
                         Chatito
                     </a>
                     &nbsp; is a language that helps create and maintain datasets. You can improve and customize the assistant accuracy and
-                    knowledge by extending intents, slots and sentences to build a cloud of possible combinations and only pull the
-                    examples needed. Click 'Generate dataset' to continue.
+                    knowledge by extending intents, slots and sentences to build a cloud of possible combinations and only pull the examples
+                    needed. Click 'Generate dataset' to continue.
                 </p>
                 <es.EditorWrapper>
-                    <es.EditorHeader style={ { display: 'block', textAlign: 'right', padding: 16 } }>
-                        <Button onClick={ this.onAddFile } style={ { marginRight: 32 } } type="dashed">
+                    <es.EditorHeader style={{ display: 'block', textAlign: 'right', padding: 16 }}>
+                        <Button onClick={this.onAddFile} style={{ marginRight: 32 }} type="dashed">
                             <Icon type="plus" theme="outlined" />
                             Add new file
                         </Button>
-                        <Button type="primary" onClick={ this.onToggleDrawer } disabled={ !!s.error }>
+                        <Button type="primary" onClick={this.onToggleDrawer} disabled={!!s.error}>
                             <Icon type="play-circle" theme="outlined" />
                             Generate dataset
                         </Button>
                     </es.EditorHeader>
                     <es.EditorHeader>
-                        <es.TabsArea innerRef={ this.tabsContainer }>{ this.tabs.map(this.renderTabButton) }</es.TabsArea>
+                        <es.TabsArea innerRef={this.tabsContainer}>{this.tabs.map(this.renderTabButton)}</es.TabsArea>
                     </es.EditorHeader>
                     <es.CodeStyles id="my-code-editor" />
-                    <es.AlertNotification state={ alertState }> { s.error || s.warning || `Correct syntax!` }</es.AlertNotification>
-                    <es.EditorOverlay onClick={ this.onCloseDrawer } showDrawer={ s.showDrawer || s.generating }>
-                        { loading }
-                        <es.Drawer onClick={ e => e.stopPropagation() } showDrawer={ s.showDrawer }>
-                            <Icon type="close" theme="outlined" onClick={ this.onCloseDrawer } />
-                            { this.renderDatasetPreviewer() }
+                    <es.AlertNotification state={alertState}> {s.error || s.warning || `Correct syntax!`}</es.AlertNotification>
+                    <es.EditorOverlay onClick={this.onCloseDrawer} showDrawer={s.showDrawer || s.generating}>
+                        {loading}
+                        <es.Drawer onClick={e => e.stopPropagation()} showDrawer={s.showDrawer}>
+                            <Icon type="close" theme="outlined" onClick={this.onCloseDrawer} />
+                            {this.renderDatasetPreviewer()}
                         </es.Drawer>
                     </es.EditorOverlay>
                 </es.EditorWrapper>
@@ -187,10 +189,10 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
             return null;
         }
         return [
-            <div style={ { padding: '20px 20px 0 20px', textAlign: 'center' } } key="top_drawer">
-                <Progress type="circle" percent={ this.state.downloadProgress } style={ { marginBottom: 20, marginLeft: 30 } } />
+            <div style={{ padding: '20px 20px 0 20px', textAlign: 'center' }} key="top_drawer">
+                <Progress type="circle" percent={this.state.downloadProgress} style={{ marginBottom: 20, marginLeft: 30 }} />
                 <br />
-                <Button type="primary" onClick={ this.trainTestAndSaveModels } disabled={ this.state.isDownloading }>
+                <Button type="primary" onClick={this.trainTestAndSaveModels} disabled={this.state.isDownloading}>
                     <Icon type="play-circle" theme="outlined" />
                     Start training!
                 </Button>
@@ -202,14 +204,14 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
             <es.BlockWrapper key="bottom_drawer">
                 <es.BlockWrapperTitle>Review the generated training dataset:</es.BlockWrapperTitle>
                 <ReactJson
-                    style={ { padding: 20 } }
-                    src={ this.state.trainingDataset }
+                    style={{ padding: 20 }}
+                    src={this.state.trainingDataset}
                     theme="chalk"
                     iconStyle="square"
-                    enableClipboard={ false }
-                    displayDataTypes={ false }
-                    name={ false }
-                    collapsed={ 1 }
+                    enableClipboard={false}
+                    displayDataTypes={false}
+                    name={false}
+                    collapsed={1}
                 />
             </es.BlockWrapper>
         ];
@@ -219,15 +221,15 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
         const changeTab = () => this.changeTab(i);
         const onCloseTab = this.closerTab(i);
         return (
-            <es.TabButton active={ this.state.activeTabIndex === i } key={ `tab-${i}` } onClick={ changeTab }>
-                { t.title }
-                <Icon type="close" theme="outlined" onClick={ onCloseTab } />
+            <es.TabButton active={this.state.activeTabIndex === i} key={`tab-${i}`} onClick={changeTab}>
+                {t.title}
+                <Icon type="close" theme="outlined" onClick={onCloseTab} />
             </es.TabButton>
         );
     };
     /* ================== Event Handlers ================== */
     private onCloseDrawer = () => {
-        this.setState({ showDrawer: false, trainingDataset: {}, testingDataset: {} })
+        this.setState({ showDrawer: false, trainingDataset: {}, testingDataset: {} });
     };
 
     private onAddFile = () => {
@@ -347,7 +349,7 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
                 return {
                     warning: `Warning: Limit the number of generated examples for intents. E.g.: %[${
                         intentsWithoutLimit[0].key
-                        }]('training': '100')`
+                    }]('training': '100')`
                 };
             }
             return null;
@@ -408,7 +410,7 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
                         const totalLength = progressEvent.lengthComputable
                             ? progressEvent.total
                             : progressEvent.target.getResponseHeader('content-length') ||
-                            progressEvent.target.getResponseHeader('x-decompressed-content-length');
+                              progressEvent.target.getResponseHeader('x-decompressed-content-length');
                         if (totalLength !== null) {
                             total += totalLength;
                             progress += Math.round((progressEvent.loaded * 100) / total);

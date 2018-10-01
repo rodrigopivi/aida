@@ -5,7 +5,7 @@ import { withPrefix } from 'gatsby-link';
 import * as React from 'react';
 import { AidaPipeline } from '../../src/pipelines/zebraWings/pipeline';
 import * as types from '../../src/types';
-import TrainedPipelineTestInput from './TrainedPipelineTestInput';
+import TestPipelineChat from './Chat/TestPipelineChat';
 
 interface ILoadPreTrainedExample {
     downloadProgress: number;
@@ -39,7 +39,7 @@ export default class LoadPreTrainedExample extends React.Component<{}, ILoadPreT
 
     public render() {
         if (this.state.modelsLoaded && this.pipeline) {
-            return <TrainedPipelineTestInput pipeline={this.pipeline}>{this.renderIntentsList()}</TrainedPipelineTestInput>;
+            return <TestPipelineChat pipeline={this.pipeline}>{this.renderIntentsList()}</TestPipelineChat>;
         }
         const disableDownload = this.state.isDownloading || this.state.downloadProgress === 100;
         const buttonMessage = disableDownload
@@ -49,51 +49,7 @@ export default class LoadPreTrainedExample extends React.Component<{}, ILoadPreT
             : 'Start demo';
         return (
             <Row type="flex">
-                <Col span={24} sm={{ span: 12 }} style={{ textAlign: 'justify' }}>
-                    <h1>Build conversational user experiences</h1>
-                    <h3>Aida is a library that helps you build conversational user experiences with this concepts in mind:</h3>
-                    <ul>
-                        <li>
-                            <strong>Universal application:</strong> The trained models should be able to run anywhere, that is why the
-                            models have two mirror implementations: in{' '}
-                            <a href="https://js.tensorflow.com/" target="_blank">
-                                TensorflowJS
-                            </a>{' '}
-                            to be able to train and run from browsers or nodejs, and in{' '}
-                            <a href="https://keras.io/" target="_blank">
-                                Keras
-                            </a>{' '}
-                            to run in python and export to mobile devices (CoreML for iOS and TensorFlow for Android).
-                        </li>
-                        <li>
-                            <strong>Offline support:</strong> It should be able to train and make predictions without connectivty, no need
-                            to have a server-side api, although the trained models can also run server-side behind an api if desired.
-                        </li>
-                        <li>
-                            <strong>Low memory consumption:</strong> Having small file size and memory consumption is very important if we
-                            want to run from browsers. Most NLU models use huge dictionaries (several gigabytes size) like word2vec, to
-                            solve this problem, we are only using pre-trained{' '}
-                            <a href="https://fasttext.cc/" target="_blank">
-                                fastText
-                            </a>{' '}
-                            bigram embeddings, this keeps the dictionary very small, fast to download.
-                        </li>
-                        <li>
-                            <strong>Accurate:</strong> Carefully crafted, close to state of the art neural network models for text
-                            classification and named entity recognition, the models will only get better as the field progresses and the
-                            community expands.
-                        </li>
-                        <li>
-                            <strong>Easy to use:</strong> Getting started by creating a dataset and training couldn't be easier thanks to{' '}
-                            <a href="https://rodrigopivi.github.io/Chatito" target="_blank">
-                                Chatito
-                            </a>
-                            , you can create a large dataset in minutes, and start training without any setup, just from the browser.
-                        </li>
-                    </ul>
-                    <p>Click 'start demo' to continue.</p>
-                </Col>
-                <Col span={24} sm={{ span: 12 }}>
+                <Col span={24} sm={{ span: 12 }} style={{ margin: 'auto' }}>
                     <Card style={{ marginLeft: '2em', textAlign: 'center' }}>
                         <div>
                             <Progress type="circle" percent={this.state.downloadProgress} />

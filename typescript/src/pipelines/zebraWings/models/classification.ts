@@ -16,8 +16,8 @@ export default class ClassificationModel extends types.PipelineModel implements 
         // Layer 1: Convolution + max pool
         const input = tf.input({
             dtype: 'float32',
-            shape: [maxWords, config.embeddingDimensions],
-            name: 'embedded_words'
+            name: 'embedded_words',
+            shape: [maxWords, config.embeddingDimensions]
         });
         const convLayer1 = tf.layers
             .conv1d({

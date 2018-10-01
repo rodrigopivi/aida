@@ -16,8 +16,8 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
         // WORD-NGRAMS LEVEL EMBEDDINGS
         const embeddedSentencesInput = tf.input({
             dtype: 'float32',
-            shape: [maxWords, embeddingDimensions],
-            name: 'embedded_words'
+            name: 'embedded_words',
+            shape: [maxWords, embeddingDimensions]
         });
         const convLayer1 = tf.layers
             .conv1d({
@@ -43,8 +43,8 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
         // CONCATENATE BOTH CNN ENCODERS (WORD AND CHAR) WITH THE INPUT AND THE CHAR CNN LAYER 1
         const classLabelInput = tf.input({
             dtype: 'float32',
-            shape: [datasetParams.intents.length],
-            name: 'embedded_intent'
+            name: 'embedded_intent',
+            shape: [datasetParams.intents.length]
         });
         const classLabelRepeated = tf.layers.repeatVector({ n: maxWords }).apply(classLabelInput) as tf.SymbolicTensor;
         const concated = tf.layers.concatenate().apply([classLabelRepeated, embeddedSentencesInput, convLayer2]);

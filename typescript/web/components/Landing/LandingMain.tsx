@@ -66,7 +66,7 @@ export default function LandingMain() {
                                 Use open source AI models that can train from the browser using javascript or python and can run everywhere.
                             </span>
                             <br />
-                            <Link to="/overview" key="3">
+                            <Link to="/start" key="3">
                                 <Button type="primary">Get started</Button>
                             </Link>
                         </QueueAnim>

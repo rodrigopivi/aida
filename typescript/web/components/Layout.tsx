@@ -7,6 +7,7 @@ import { Logo } from './Logo';
 
 const { Content, Footer } = Layout;
 
+const startRouteRE = /^\/start(\/.*)?$/i;
 const overviewRouteRE = /^\/overview(\/.*)?$/i;
 const demoRouteRE = /^\/demo(\/.*)?$/i;
 const trainRouteRE = /^\/train(\/.*)?$/i;
@@ -26,12 +27,14 @@ export const InnerPaddedContent = styled(InnerContent)`
 export default class MainLayout extends React.Component<{ location: { pathname: string }; addPadding?: boolean }, {}> {
     public render() {
         let defaultSelectedKeys = '-1';
-        if (overviewRouteRE.test(this.props.location.pathname)) {
+        if (startRouteRE.test(this.props.location.pathname)) {
             defaultSelectedKeys = '0';
         } else if (trainRouteRE.test(this.props.location.pathname)) {
             defaultSelectedKeys = '1';
         } else if (demoRouteRE.test(this.props.location.pathname)) {
             defaultSelectedKeys = '2';
+        } else if (overviewRouteRE.test(this.props.location.pathname)) {
+            defaultSelectedKeys = '3';
         }
         const IC = this.props.addPadding ? InnerPaddedContent : InnerContent;
         return (
@@ -43,9 +46,9 @@ export default class MainLayout extends React.Component<{ location: { pathname: 
                         </Logo>
                         <Menu theme="light" mode="inline" defaultSelectedKeys={[defaultSelectedKeys]} style={{ background: '#fcfcfc' }}>
                             <Menu.Item key="0">
-                                <Link to="/overview">
+                                <Link to="/start">
                                     <Icon type="right-circle-o" />
-                                    Overview
+                                    Getting started
                                 </Link>
                             </Menu.Item>
                             <Menu.Item key="1">
@@ -58,6 +61,12 @@ export default class MainLayout extends React.Component<{ location: { pathname: 
                                 <Link to="/demo">
                                     <Icon type="right-circle-o" />
                                     Demo
+                                </Link>
+                            </Menu.Item>
+                            <Menu.Item key="3">
+                                <Link to="/overview">
+                                    <Icon type="right-circle-o" />
+                                    Technical Overview
                                 </Link>
                             </Menu.Item>
                         </Menu>

@@ -13,8 +13,8 @@ export default ({ location, data }: any) => {
 };
 
 export const query = graphql`
-    query OverviewMarkdownFile {
-        allFile(filter: { name: { eq: "technical_overview" }, extension: { eq: "md" }, sourceInstanceName: { eq: "markdown-pages" } }) {
+    query ReadmeMarkdownFile {
+        allFile(filter: { name: { eq: "readme" }, extension: { eq: "md" }, sourceInstanceName: { eq: "markdown-pages" } }) {
             edges {
                 node {
                     childMarkdownRemark {

@@ -23,11 +23,11 @@ export class TimeSeriesAttention extends tf.layers.Layer {
         const timed = tf.sequential({ name: 'per_time_step' });
         timed.add(
             tf.layers.dense({
+                activation: 'softmax',
                 inputShape: [dimensions],
                 kernelInitializer: 'zeros',
-                units: dimensions,
-                activation: 'softmax',
-                name: 'att_dense1'
+                name: 'att_dense1',
+                units: dimensions
             })
         );
         timed.add(tf.layers.dense({ units: dimensions, kernelInitializer: 'glorotNormal', activation: 'tanh', name: 'att_dense2' }));
