@@ -118,8 +118,6 @@ export default class ChatResponses extends React.Component<IChatResponsesProps &
         if (!voice || this.state.speaking) {
             return;
         }
-        voice.pitch = 0.9;
-        voice.rate = 0.9;
         this.setState({ speaking: true }, () => {
             if (!synth) {
                 return;
