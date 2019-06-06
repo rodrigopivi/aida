@@ -126,9 +126,9 @@ export default class LoadPreTrainedExample extends React.Component<{}, ILoadPreT
                 ner: withPrefix('/models/pretrained/web/ner.json')
             }
         };
-        const pretrainedEmbedding = await tf.loadModel(modelsUrls[backend].embedding);
-        const pretrainedClassifier = await tf.loadModel(modelsUrls[backend].classification);
-        const pretrainedNer = await tf.loadModel(modelsUrls[backend].ner);
+        const pretrainedEmbedding = await tf.loadLayersModel(modelsUrls[backend].embedding);
+        const pretrainedClassifier = await tf.loadLayersModel(modelsUrls[backend].classification);
+        const pretrainedNer = await tf.loadLayersModel(modelsUrls[backend].ner);
         return { pretrainedEmbedding, pretrainedClassifier, pretrainedNer };
     };
 

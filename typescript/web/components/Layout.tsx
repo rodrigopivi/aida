@@ -78,7 +78,7 @@ export default class MainLayout extends React.Component<{ location: { pathname: 
                     </Layout.Sider>
                     <Layout style={{ padding: '24px 0 0 24px' }}>
                         <IC>{this.props.children}</IC>
-                        <Footer style={{ textAlign: 'center' }}>Aida © 2018 Rodrigo Pimentel</Footer>
+                        <Footer style={{ textAlign: 'center' }}>By Rodrigo Pimentel</Footer>
                     </Layout>
                 </Layout>
             </Layout>

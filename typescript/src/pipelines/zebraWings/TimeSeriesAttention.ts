@@ -19,7 +19,7 @@ export class TimeSeriesAttention extends tf.layers.Layer {
     }
 
     public build(inputShape: tf.Shape): void {
-        const dimensions = inputShape[2];
+        const dimensions = inputShape[2] as number;
         const timed = tf.sequential({ name: 'per_time_step' });
         timed.add(
             tf.layers.dense({

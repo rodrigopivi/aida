@@ -10,10 +10,10 @@ export class CombineNgramsLayer extends tf.layers.Layer {
     public computeOutputShape(inputShape: number[]) {
         return [inputShape[0], inputShape[1], inputShape[inputShape.length - 1]];
     }
-    public call(inputs: tf.Tensor, kwargs: any) {
+    public call(inputs: tf.Tensor[], kwargs: any) {
         return tf.tidy(() => {
             this.invokeCallHook(inputs, kwargs);
-            const combined = tf.sum(inputs, 2);
+            const combined = inputs[0].sum(2);
             const output = l2Normalize(combined, 2);
             combined.dispose();
             return output;

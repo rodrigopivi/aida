@@ -15,7 +15,7 @@ export class PreSavedEmbeddingsInitializer extends initializers.Initializer {
         super();
         this.config = config;
     }
-    public apply(shape: tf.Shape, dtype: tf.DataType): tf.Tensor {
+    public apply(shape: number[], dtype: tf.DataType): tf.Tensor {
         if (!this.config || !this.config.pretrainedNGramVectors) {
             return tf.zeros(shape, dtype);
         }

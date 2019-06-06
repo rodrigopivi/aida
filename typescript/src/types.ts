@@ -118,7 +118,7 @@ export interface IPipelineModelLogger {
 }
 export class PipelineModel {}
 export interface IPipelineModel {
-    tfModel: () => tf.Model;
+    tfModel: () => tf.LayersModel;
     predict: (sentences: string[], ...moreArgs: any[]) => IClassificationPred[] | INerPred[];
     train: (trainDatasetParams: ITrainingParams) => Promise<void>;
     test: (testDataset: ITestingParams) => Promise<IPredictionStats>;

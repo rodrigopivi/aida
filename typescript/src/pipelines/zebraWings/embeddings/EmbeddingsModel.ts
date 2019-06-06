@@ -33,8 +33,8 @@ export class EmbeddingsModel {
     private maxWords: number;
     private maxNgrams: number;
     private embeddingDimensions: number;
-    private model: tf.Model;
-    private inputModel: tf.Model | null = null;
+    private model: tf.LayersModel;
+    private inputModel: tf.LayersModel | null = null;
 
     constructor(
         ngramToIdDictionary: { [key: string]: number },
@@ -42,7 +42,7 @@ export class EmbeddingsModel {
         maxNgrams: number,
         embeddingDimensions: number,
         tokenizer: types.IAidaTokenizer,
-        pretrainedEmbeddingModel?: tf.Model,
+        pretrainedEmbeddingModel?: tf.LayersModel,
         pretrainedNGramVectors?: types.PretrainedDict
     ) {
         this.ngramToIdDictionary = ngramToIdDictionary;
@@ -81,7 +81,7 @@ export class EmbeddingsModel {
     private sentencesToWordIds = (sentences: string[]) => {
         return tf.tidy(() => {
             const sentencesSplittedByWords = sentences.map(s => this.tokenizer.splitSentenceToWords(s));
-            const buffer = tf.buffer([sentences.length, this.maxWords, this.maxNgrams], 'int32') as tf.TensorBuffer<tf.Rank.R3>;
+            const buffer = tf.buffer([sentences.length, this.maxWords, this.maxNgrams], 'int32') as tf.TensorBuffer<tf.Rank.R3, 'int32'>;
             sentencesSplittedByWords.forEach((s, sentenceIndex) => {
                 s.forEach((w: string, wordIndex: number) => {
                     if (this.ngramToIdDictionary[w] !== undefined) {

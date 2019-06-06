@@ -48,17 +48,14 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
         });
         const classLabelRepeated = tf.layers.repeatVector({ n: maxWords }).apply(classLabelInput) as tf.SymbolicTensor;
         const concated = tf.layers.concatenate().apply([classLabelRepeated, embeddedSentencesInput, convLayer2]);
-        const biLstm = tf.layers
-            .bidirectional({
-                layer: tf.layers.lstm({ units: rnnUnits, returnSequences: true, name: 'bidi_encoder' }) as tf.RNN
-            })
-            .apply(concated) as tf.SymbolicTensor[];
-        let finalHidden: tf.SymbolicTensor | null = null;
+        let finalHidden: tf.SymbolicTensor[] | tf.SymbolicTensor | null = null;
+        const lstmLayer = tf.layers.lstm({ units: rnnUnits, returnSequences: true, name: 'bidi_encoder' }) as tf.RNN;
         if (addAttention) {
+            const biLstm = tf.layers.bidirectional({ layer: lstmLayer, mergeMode: null } as any).apply(concated) as tf.SymbolicTensor[];
             const timeAttention = new TimeSeriesAttention({ name: 'attention_weight' }).apply(biLstm[0]) as tf.SymbolicTensor;
             finalHidden = tf.layers.concatenate().apply([timeAttention, biLstm[0], biLstm[1]]) as tf.SymbolicTensor;
         } else {
-            finalHidden = tf.layers.concatenate().apply([biLstm[0], biLstm[1]]) as tf.SymbolicTensor;
+            finalHidden = tf.layers.bidirectional({ layer: lstmLayer, mergeMode: 'concat' }).apply(concated) as tf.SymbolicTensor[];
         }
         const outputs = tf.layers.dense({ activation: 'softmax', units: numSlotTypes }).apply(finalHidden) as tf.SymbolicTensor;
         const model = tf.model({ inputs: [classLabelInput, embeddedSentencesInput], outputs });
@@ -68,7 +65,7 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
 
     private config: types.INerModelParams & types.IDefaultModelParams;
     private datasetParams: types.IDatasetParams;
-    private model: tf.Model;
+    private model: tf.LayersModel;
     private embeddingsModel: EmbeddingsModel;
     private logger: types.IPipelineModelLogger;
     private nerTrainStatsHandler: types.ITrainStatsHandler['ner'] | undefined;
@@ -78,7 +75,7 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
         datasetParams: types.IDatasetParams,
         embeddingsModel: EmbeddingsModel,
         logger: types.IPipelineModelLogger,
-        pretrainedModel?: tf.Model,
+        pretrainedModel?: tf.LayersModel,
         nerTrainStatsHandler?: types.ITrainStatsHandler['ner']
     ) {
         super();
@@ -219,7 +216,7 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
                     const slotIds = tf
                         .tensor1d(wordsSlotId, 'int32')
                         .pad([[0, this.datasetParams.maxWordsPerSentence - wordsSlotId.length]]);
-                    const ohe = tf.oneHot(slotIds, slotsLength).asType('float32');
+                    const ohe = tf.oneHot(slotIds, slotsLength).asType('float32') as tf.Tensor2D;
                     slotIds.dispose();
                     y2sentences.push(ohe);
                 }

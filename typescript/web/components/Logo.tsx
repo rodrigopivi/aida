@@ -25,7 +25,7 @@ export const ColoredText = styled.div`
     }
 `;
 
-export const Logo = ColoredText.extend`
+export const Logo = styled(ColoredText)`
     text-align: center;
     font-size: 19px;
 `;

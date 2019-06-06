@@ -56,9 +56,9 @@ export class AidaPipeline {
         ngramToIdDictionary: { [key: string]: number };
         trainStatsHandler?: types.ITrainStatsHandler;
         pipelineDefinition?: types.IPipelineDefinition;
-        pretrainedClassifier?: tf.Model;
-        pretrainedNer?: tf.Model;
-        pretrainedEmbedding?: tf.Model;
+        pretrainedClassifier?: tf.LayersModel;
+        pretrainedNer?: tf.LayersModel;
+        pretrainedEmbedding?: tf.LayersModel;
         pretrainedNGramVectors?: types.PretrainedDict;
     }) {
         if (cfg.pipelineDefinition) {

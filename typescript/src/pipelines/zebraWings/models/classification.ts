@@ -95,7 +95,7 @@ export default class ClassificationModel extends types.PipelineModel implements 
 
     private config: types.IClassificationModelParams & types.IDefaultModelParams;
     private datasetParams: types.IDatasetParams;
-    private model: tf.Model;
+    private model: tf.LayersModel;
     private embeddingsModel: EmbeddingsModel;
     private logger: types.IPipelineModelLogger;
     private classificationTrainStatsHandler: types.ITrainStatsHandler['classification'] | undefined;
@@ -104,7 +104,7 @@ export default class ClassificationModel extends types.PipelineModel implements 
         datasetParams: types.IDatasetParams,
         embeddingsModel: EmbeddingsModel,
         logger: types.IPipelineModelLogger,
-        pretrainedModel?: tf.Model,
+        pretrainedModel?: tf.LayersModel,
         classificationTrainStatsHandler?: types.ITrainStatsHandler['classification']
     ) {
         super();

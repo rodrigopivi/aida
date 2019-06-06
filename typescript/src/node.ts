@@ -42,9 +42,9 @@ const trainTestAndSaveModels = async () => {
 const loadSavedModels = async () => {
     const ngramToIdDictionary: { [key: string]: number } = require('../public/models/ngram_to_id_dictionary.json');
     const datasetParams: types.IDatasetParams = require('../public/models/dataset_params.json');
-    const pretrainedEmbedding = await tf.loadModel('file://public/models/pretrained/node/embedding/model.json');
-    const pretrainedClassifier = await tf.loadModel('file://public/models/pretrained/node/classification/model.json');
-    const pretrainedNer = await tf.loadModel('file://public/models/pretrained/node/ner/model.json');
+    const pretrainedEmbedding = await tf.loadLayersModel('file://public/models/pretrained/node/embedding/model.json');
+    const pretrainedClassifier = await tf.loadLayersModel('file://public/models/pretrained/node/classification/model.json');
+    const pretrainedNer = await tf.loadLayersModel('file://public/models/pretrained/node/ner/model.json');
     const pipeline = new AidaPipeline({
         datasetParams,
         logger,

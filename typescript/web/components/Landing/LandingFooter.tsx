@@ -23,7 +23,7 @@ export default function LandingFooter() {
             <Row className="bottom-bar">
                 <Col lg={6} sm={24} />
                 <Col lg={18} sm={24}>
-                    <span style={{ marginRight: 12 }}>© 2018 Rodrigo Pimentel</span>
+                    <span style={{ marginRight: 12 }}>By Rodrigo Pimentel</span>
                 </Col>
             </Row>
         </Footer>
