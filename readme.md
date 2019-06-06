@@ -8,8 +8,8 @@
 </h1>
 
 <p align="center">
-  <strong>Your application can understand natural language in house.</strong><br>
-  Use open source AI models that can train from the browser using javascript or python and can run everywhere.
+  <strong>Build simple conversational assistants, chatbots, and more.</strong><br>
+  Simple deep learning language models that can train and predict from the browser, nodejs and python.
 </p>
 
 <h3 align="center">
@@ -17,7 +17,7 @@
     Demo
   </a> | 
   <a href="https://aida.dor.ai/train">
-    Train your own assistant
+    Train an assistant
   </a> | 
   <a href="https://aida.dor.ai/overview">
     Technical overview
@@ -29,38 +29,8 @@
 
 <div>
   <h2>Getting started</h2>
-  <h3>Aida is a library that helps you build conversational user experiences with this concepts in mind:</h3>
+  <h3>Aida is an experimental library for building natural language predictive models. It can help you build a simple chatbot, mood detector and other similar tasks.  with this design principles:</h3>
   <ul>
-      <li>
-          <strong>Universal application:</strong> The trained models should be able to run anywhere, that is why the
-          models have two mirror implementations: in&nbsp;
-          <a href="https://js.tensorflow.com/" target="_blank">
-              TensorflowJS
-          </a>
-          &nbsp;to be able to train and run from browsers or nodejs, and in&nbsp;
-          <a href="https://keras.io/" target="_blank">
-              Keras
-          </a>
-          &nbsp;to run in python and export to mobile devices (CoreML for iOS and TensorFlow for Android).
-      </li>
-      <li>
-          <strong>Offline support:</strong> It should be able to train and make predictions without connectivty, no need
-          to have a server-side api, although the trained models can also run server-side behind an api if desired.
-      </li>
-      <li>
-          <strong>Low memory consumption:</strong> Having small file size and memory consumption is very important if we
-          want to run from browsers. Most NLU models use huge dictionaries (several gigabytes size) like word2vec, to
-          solve this problem, we are only using pre-trained&nbsp;
-          <a href="https://fasttext.cc/" target="_blank">
-              fastText
-          </a>
-          &nbsp;bigram embeddings, this keeps the dictionary very small, fast to download.
-      </li>
-      <li>
-          <strong>Accurate:</strong> Carefully crafted, close to state of the art neural network models for text
-          classification and named entity recognition, the models will only get better as the field progresses and the
-          community expands.
-      </li>
       <li>
           <strong>Easy to use:</strong> Getting started by creating a dataset and training couldn't be easier thanks to&nbsp;
           <a href="https://rodrigopivi.github.io/Chatito" target="_blank">
@@ -68,16 +38,39 @@
           </a>
           , you can create a large dataset in minutes, and start training without any setup, just from the browser.
       </li>
+        <li>
+          <strong>Low memory consumption:</strong> Having small file size and memory consumption is very important to be able to predict from the browser and mobile devices. The language embeddings give up some information and performance by not using a full word dictionary, instead the model uses pre-trained word character bigrams provided by
+          <a href="https://fasttext.cc/" target="_blank">
+              fastText
+          </a>, to overcome this problem and get good predictive performance, it is required additional training examples, that is why a generative scripting language is provided to overcome this problem (Chatito DSL).
+      </li>
+      <li>
+          <strong>Accurate:</strong> Although the model throws away some information by using bigrams to compose words instead of using full words, the models are able to get to good prediction rates given more data to learn from.
+      </li>
+      <li>
+          <strong>Universal application:</strong> The trained models should be able to run from multiple environments, that is why the
+          models have two mirror implementations: in&nbsp;
+          <a href="https://js.tensorflow.com/" target="_blank">
+              TensorflowJS
+          </a>
+          &nbsp;to be able to train and run from the browser or NodeJs, and &nbsp;
+          <a href="https://keras.io/" target="_blank">
+              Keras
+          </a> for Python.
+      </li>
+      <li>
+          <strong>Offline support:</strong> It should be able to train and make predictions without connectivty, no need to have a server-side api, although the trained models can also run server-side behind an api if desired. (TODO: add example running as AWS Lambda function)
+      </li>
   </ul>
 </div>
 
 ## [Check the demo](https://aida.dor.ai/demo)
 
-It's a chatbott running from the browser using Tensorflow.js and the Web Speech API to interact with voice too.
+It's a chatbott running from the browser using Tensorflow.js and using the Web Speech API for speach to text and text to speach.
 
 ## Train from the browser
 
-You can train from the browser [using Javascript and Tensorflow.js](https://aida.dor.ai/train) (using your local GPU resources) or from the browser [using Python and Keras](https://colab.research.google.com/drive/1nzjxR7w2X99qlxjSD4pGOWksMLqK0eqZ) thanks to Google Collab's free TPU's. There is no need to setup a local environment to start training your own conversational assistant.
+You can train from the browser [using Javascript and Tensorflow.js](https://aida.dor.ai/train) (using your local GPU resources) or from the browser [using Python and Keras](https://colab.research.google.com/drive/1nzjxR7w2X99qlxjSD4pGOWksMLqK0eqZ) thanks to Google Colaboratory's free TPU's. There is no need to setup a local environment to start training your own conversational assistant.
 
 
 ## Local setup and training
@@ -118,7 +111,7 @@ Rodrigo Pimentel
 # License
 The code is open sourced under the BSD-3-Clause license, please contact me if you want to use the code under a less restrictive license.
 
-Copyright 2018 Rodrigo Pimentel
+Copyright 2019 Rodrigo Pimentel
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
