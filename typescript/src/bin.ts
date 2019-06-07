@@ -79,12 +79,10 @@ export interface IAidaConfig {
                 `npx chatito ${chatitoInputPath} --outputPath="${chatitoOutputPath}" --trainingFileName="train.json" --testingFileName="test.json"`,
                 { stdio: 'inherit' }
             );
-            const testingChatitoDataset: webAdapter.IDefaultDataset = JSON.parse(
+            const trainingChatitoDataset: webAdapter.IDefaultDataset = JSON.parse(
                 fs.readFileSync(`${chatitoOutputPath}/train.json`, 'utf8')
             );
-            const trainingChatitoDataset: webAdapter.IDefaultDataset = JSON.parse(
-                fs.readFileSync(`${chatitoOutputPath}/test.json`, 'utf8')
-            );
+            const testingChatitoDataset: webAdapter.IDefaultDataset = JSON.parse(fs.readFileSync(`${chatitoOutputPath}/test.json`, 'utf8'));
             datasetGeneration({
                 language: 'en',
                 outputPath: aidaOutputPath,
