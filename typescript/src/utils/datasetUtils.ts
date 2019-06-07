@@ -34,6 +34,9 @@ export const datasetGeneration = async (config: IDatasetGenerationArgs) => {
         stats
     } = dictionariesFromDataset(config.trainingChatitoDataset, config.testingChatitoDataset, tokenizer, config.language);
     process.stdout.write(`Saving files...\n`);
+    if (!fs.existsSync(config.outputPath)) {
+        fs.mkdirSync(config.outputPath);
+    }
     fs.writeFileSync(
         path.resolve(process.cwd(), config.outputPath, 'dataset_params.json'),
         JSON.stringify({
