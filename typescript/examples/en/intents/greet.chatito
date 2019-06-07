@@ -1,15 +1,14 @@
-%[greet]('training': '300', 'testing': '100')
-    ~[hi] ~[hi?] ~[hi?]
-    ~[greetings] ~[greetings?]
-    ~[hi] ~[greetings] ~[hi?]
-    ~[greetings] ~[hi] ~[hi?]
+import ./common.chatito
 
-~[hi]
-    hi
-    hello
-    hey
-    howdy
-    hola
+%[greet]('training': '300', 'testing': '100')
+    *[20] ~[hi]
+    *[20] ~[greetings]
+    *[10] ~[hi] ~[greetings]
+    *[10] ~[greetings] ~[hi]
+    ~[hi] ~[hi]
+    ~[greetings] ~[greetings]
+    ~[hi] ~[greetings?] ~[hi?]
+    ~[greetings] ~[hi] ~[hi?]
 
 ~[greetings]
     greetings

@@ -9,9 +9,9 @@ export default class ClassificationModel extends types.PipelineModel implements 
         { maxWordsPerSentence: maxWords, intents }: types.IDatasetParams
     ) {
         const numClasses = intents.length;
-        const LEARNING_RATE = 0.0066; // use 1e-4 as default as alternative starting point
-        const ADAM_BETA_1 = 0.0025;
-        const ADAM_BETA_2 = 0.1;
+        const LEARNING_RATE = 0.0012; // use 1e-4 as default as alternative starting point
+        const ADAM_BETA_1 = 0.0008;
+        const ADAM_BETA_2 = 0.03;
         const optimizer = tf.train.adam(LEARNING_RATE, ADAM_BETA_1, ADAM_BETA_2);
         // Layer 1: Convolution + max pool
         const input = tf.input({

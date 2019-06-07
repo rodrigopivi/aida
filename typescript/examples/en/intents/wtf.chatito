@@ -1,11 +1,21 @@
+import ./common.chatito
+
 // Detect insults and out of context sentences
 %[wtf]('training': '300', 'testing': '100')
+    *[20] ~[noise]
+    *[20] ~[rudeness]
+    *[20]~[something you cant]
+    *[5] ~[noise] ~[rudeness]
+    *[5] ~[rudeness] ~[noise]
+    *[5] ~[noise] ~[noise]
+    *[5] ~[rudeness] ~[rudeness]
     ~[noise] ~[rudeness?] ~[rudeness?] ~[noise?] ~[rudeness?] ~[noise?]
     ~[noise]~[noise?]~[noise?]
     ~[rudeness] ~[rudeness?] ~[rudeness?]
-    ~[rudeness?] please ~[rudeness]
-    ~[something you cant]
     ~[noise?] ~[rudeness?] ~[noise?] ~[something you cant]
+    ~[hi] ~[noise] ~[rudeness?] ~[please?] ~[thanks?]
+    ~[hi] ~[rudeness?] ~[noise] ~[please?] ~[thanks?]
+    ~[something you cant] ~[rudeness]
 
 ~[something you cant]
     can you give me the weather forecast

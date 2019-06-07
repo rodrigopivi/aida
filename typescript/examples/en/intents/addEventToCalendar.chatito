@@ -1,9 +1,19 @@
+import ./common.chatito
 
 // Add custom events to a calendar by start date/date-time
 %[addEventToCalendar]('training': '1000', 'testing': '500')
-    ~[please?] ~[add to calendar] @[calendarEvent] ~[at] @[dateTime]
-    ~[set the] @[calendarEvent#alarm] ~[at?] @[dateTime]
-    ~[add to calendar] ~[at] @[dateTime] ~[i have?] @[calendarEvent] 
+    *[20] ~[set the] @[calendarEvent#alarm] ~[at?] @[dateTime]
+    *[10] ~[at?] @[dateTime] ~[set the] @[calendarEvent#alarm]
+    *[20] ~[add to calendar] ~[at] @[dateTime] ~[i have?] @[calendarEvent] 
+    *[10] @[calendarEvent] ~[at] @[dateTime]
+    *[10] ~[add to calendar] ~[i have] @[calendarEvent] ~[at] @[dateTime]
+    ~[please?] @[calendarEvent] ~[at] @[dateTime] ~[thanks?]
+    ~[please?] ~[set the] @[calendarEvent#alarm] ~[at] @[dateTime] ~[thanks?]
+    ~[please?] ~[at?] @[dateTime] ~[set the] @[calendarEvent#alarm] ~[thanks?]
+    ~[please?] ~[add to calendar] ~[at] @[dateTime] ~[i have?] @[calendarEvent] ~[thanks?]
+    ~[please?] ~[i have] @[calendarEvent] ~[at] @[dateTime] ~[thanks?]
+    ~[please?] ~[add to calendar] ~[i have] @[calendarEvent] ~[at] ~[thanks?]
+
 
 @[calendarEvent#alarm]
     ~[alarm]
@@ -56,6 +66,8 @@
     alert
     alert clock
     wake up alarm
+    timer
+    reminder
 
 ~[service provider]
     developer
@@ -153,10 +165,6 @@
     need to remember
     save at the calendar
     add to schedule
-
-~[please]
-    please
-    pls
 
 ~[contextualDate]
     today

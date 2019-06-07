@@ -1,10 +1,17 @@
+import ./common.chatito
+
 // Play music by artist and/or song
 %[playMusic]('training': '800', 'testing': '500')
-    ~[hi?] ~[playASongOfArtist] @[artist] ~[please?]
-    ~[please?] ~[playSong] @[song] ~[fromAuthor] @[artist]
-    ~[please?] ~[playASongOfArtist] @[artist]
-    ~[playSong] @[song]
-    ~[please?] ~[playMusic]
+    *[20] ~[iWantToHearASong] ~[fromAuthor] @[artist]
+    *[20] ~[iWantTheSong] @[song]
+    *[20] ~[iWantTheSong] @[song] ~[fromAuthor] @[artist]
+    *[20] ~[fromAuthor] @[artist] ~[iWantTheSong] @[song]
+    ~[i want] ~[from] @[artist] ~[the song] @[song]
+    ~[from] @[artist] ~[i want] ~[the song] @[song]
+    ~[the song] @[song] ~[from] @[artist]
+    ~[hi] ~[please] ~[i want] ~[from] @[artist] ~[the song] @[song] ~[thanks]
+    ~[hi] ~[please] ~[from] @[artist] ~[i want] ~[the song] @[song] ~[thanks]
+    ~[hi] ~[please] ~[the song] @[song] ~[from] @[artist] ~[thanks]
 
 // The list of artists and songs was taken from this Billboard top 2017 wikipedia page:
 // https://en.wikipedia.org/wiki/Billboard_Year-End_Hot_100_singles_of_2017
@@ -220,61 +227,80 @@
 
 
 ~[fromAuthor]
-    from author
+    *[25] ~[from] 
+    *[25] ~[signed] by
+    *[25] ~[from] ~[author]
+    *[25] ~[signed] by ~[author]
+
+~[author]
+    author
+    artist
+
+~[signed]
+    signed
+    performed
+    interpreted
+
+~[from]
     from
-    of
     by
-    signed by
-    performed by
+    of
 
-~[playMusic]
-    ~[i want?] music
-    play music
-    music
+~[iWantTheSong]
+    *[15] ~[play]
+    *[15] ~[the song]
+    *[15] ~[i want] ~[to hear] ~[the song]
+    *[15] ~[play] ~[the song]
+    *[15] ~[i want] ~[the song]
+    ~[i want] you to ~[play] ~[the song]
 
-~[playSong]
-    ~[i want?] the ~[single]
-    play the ~[single]
-    reproduce the ~[single]
-    ~[i want] to hear
-    ~[i want] to listen to
+~[the song]
+    ~[the?] melody
+    ~[the?] song
+    ~[the?] single
+
+~[iWantToHearASong]
+    *[10] ~[play] ~[songsOrSong]
+    *[10] ~[i want] ~[to hear] ~[music]
+    *[10] ~[music]
+    *[10] ~[i want] ~[to hear] ~[songsOrSong]
+    *[10] ~[songsOrSong]
+    *[10] ~[play] ~[music]
+    *[10] ~[a song]
+    *[10] ~[i want] ~[a song]
+    *[10] ~[i want] ~[to hear] ~[a song]
+    *[10] ~[play] ~[a song]
+
+
+~[play]
     play
+    start
     reproduce
-    ~[i want] to hear the ~[single]
 
-~[single]
-    melody
-    song
-    single
-
-~[playASongOfArtist]
-    ~[i want] to hear a song of
-    ~[i want] to listen to
-    play some music from
-    ~[i want] to hear a ~[single] from
-    reproduce music from
-    play songs from
-    play music from
-    ~[i want] to hear
-    music ~[fromAuthor]
-    some music of
+~[music]
+    music
+    some music
 
 ~[i want]
-    want
-    i want
-    i would like
-    i wish
-    wish
-    would like
-    want you
+    ~[i?] want
+    ~[i?] would like
+    ~[i?] wish
 
-~[hi]
-    hi
-    hey
-    dude
-    hello
+~[to hear]
+    to hear
+    to listen
 
-~[please]
-    please
-    pls
-    plz
+~[songsOrSong]
+    *[50] ~[songs]
+    *[50] ~[song]
+
+~[songs]
+    songs
+    singles
+    music
+
+~[a song]
+    a song
+    a single
+    music
+    something

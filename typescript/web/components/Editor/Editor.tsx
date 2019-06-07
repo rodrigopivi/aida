@@ -1,17 +1,18 @@
-import axios from 'axios';
 import { Button, Icon, Progress } from 'antd';
-import * as React from 'react';
+import axios from 'axios';
 import * as chatito from 'chatito';
 import * as webAdapter from 'chatito/dist/adapters/web';
 import * as utils from 'chatito/dist/utils';
+import { saveAs } from 'file-saver';
 import { withPrefix } from 'gatsby-link';
 import { debounce } from 'lodash';
+import * as React from 'react';
+import englishTokenizer from '../../../src/languages/en/EnglishTokenizer';
+import { IDatasetParams, IPretrainedDictionary, ITestingParams, ITrainingParams } from '../../../src/types';
+import { dictionariesFromDataset } from '../../../src/utils/dictionaryUtils';
+import { ITrainingDashboardProps } from '../TrainingDashboard';
 import { chatitoPrism, IEditorTabs } from './editorConfig';
 import * as es from './editorStyles';
-import { ITrainingDashboardProps } from '../TrainingDashboard';
-import { dictionariesFromDataset } from '../../../src/utils/dictionaryUtils';
-import englishTokenizer from '../../../src/languages/en/EnglishTokenizer';
-import { IDatasetParams, IPretrainedDictionary, ITrainingParams, ITestingParams } from '../../../src/types';
 
 interface IEditorProps {
     tabs: IEditorTabs[];
@@ -33,7 +34,7 @@ interface IEditorState {
     embeddingsAndTrainingDatasetLoaded?: boolean;
     ngramToIdDictionary?: IPretrainedDictionary['NGRAM_TO_ID_MAP'];
     pretrainedNGramVectors?: IPretrainedDictionary['PRETRAINED'];
-    datasetStats?: { intent: string; training: number; testing: number }[];
+    datasetStats?: Array<{ intent: string; training: number; testing: number }>;
 }
 
 // NOTE: for SSR, wrap the require in check for window (since it's pre rendered by gatsbyjs)
@@ -48,15 +49,15 @@ if (typeof window !== `undefined`) {
 
 export default class Editor extends React.Component<IEditorProps, IEditorState> {
     public state: IEditorState = {
-        error: null,
-        warning: null,
         activeTabIndex: 0,
-        trainingDataset: {},
-        testingDataset: {},
-        showDrawer: false,
+        downloadProgress: 0,
+        error: null,
         generating: false,
         isDownloading: false,
-        downloadProgress: 0
+        showDrawer: false,
+        testingDataset: {},
+        trainingDataset: {},
+        warning: null
     };
     private tabsContainer = React.createRef() as React.RefObject<HTMLDivElement>;
     private codeflask: any = null;
@@ -135,15 +136,16 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
         ) {
             return this.props.children({
                 datasetParams: s.datasetParams,
-                trainDataset: s.trainingParams,
-                testDataset: s.testingParams,
+                datasetStats: s.datasetStats,
                 ngramToIdDictionary: s.ngramToIdDictionary,
                 pretrainedNGramVectors: s.pretrainedNGramVectors,
-                datasetStats: s.datasetStats
+                testDataset: s.testingParams,
+                trainDataset: s.trainingParams
             });
         }
         const alertState = !!s.error ? 'error' : !!s.warning ? 'warning' : 'success';
         const loading = s.generating ? <Icon type="loading" theme="outlined" /> : null;
+        const onClickDrawer = (e: MouseEvent) => e.stopPropagation();
         return (
             <div>
                 <h2>Train a custom assistant</h2>
@@ -173,7 +175,7 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
                     <es.AlertNotification state={alertState}> {s.error || s.warning || `Correct syntax!`}</es.AlertNotification>
                     <es.EditorOverlay onClick={this.onCloseDrawer} showDrawer={s.showDrawer || s.generating}>
                         {loading}
-                        <es.Drawer onClick={e => e.stopPropagation()} showDrawer={s.showDrawer}>
+                        <es.Drawer onClick={onClickDrawer} showDrawer={s.showDrawer}>
                             <Icon type="close" theme="outlined" onClick={this.onCloseDrawer} />
                             {this.renderDatasetPreviewer()}
                         </es.Drawer>
@@ -244,8 +246,8 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
                     return;
                 }
                 this.tabsContainer.current.scrollTo({
-                    left: this.tabsContainer.current.scrollWidth,
-                    behavior: 'smooth'
+                    behavior: 'smooth',
+                    left: this.tabsContainer.current.scrollWidth
                 });
             });
         }
@@ -272,6 +274,16 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
         }
     };
     /* ================== Utils ================== */
+    private importFile = (startPath: string, endPath: string) => {
+        const filename = endPath.replace(/^\.\//, '');
+        const tabFound = this.tabs.find(t => t.title.trim() === filename);
+        if (!tabFound) {
+            throw new Error(`Can't import ${endPath}. Not found.`);
+        }
+        // note: returning empty path since there is no actual filesystem
+        return { filePath: '', dsl: tabFound.value };
+    };
+
     private saveToLocalStorage = () => {
         if (typeof window !== `undefined` && localStorage) {
             localStorage.setItem('tabs', JSON.stringify(this.tabs));
@@ -377,10 +389,10 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
 
     private generateDataset = async () => {
         let trainingDataset: webAdapter.IDefaultDataset = {};
-        let testingDataset: webAdapter.IDefaultDataset = {};
+        const testingDataset: webAdapter.IDefaultDataset = {};
         for (const [i, tab] of this.tabs.entries()) {
             try {
-                const { training, testing } = await webAdapter.adapter(tab.value, trainingDataset);
+                const { training, testing } = await webAdapter.adapter(tab.value, trainingDataset, this.importFile, '');
                 trainingDataset = training;
                 utils.mergeDeep(testingDataset, testing);
             } catch (e) {
@@ -448,23 +460,34 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
         const trainingParams: ITrainingParams = { trainX, trainY, trainY2 };
         const testingParams: ITestingParams = { testX, testY, testY2 };
         const datasetParams = {
-            language,
             intents,
             intentsWithSlots,
+            language,
             maxWordsPerSentence,
             slotsToId
         } as IDatasetParams;
-        // NOTE: using setTimeout to render a loading state before dataset generation may block the ui
+        const paramsBlob = new Blob([JSON.stringify(datasetParams)], { type: 'text/json;charset=utf-8' });
+        const trainingBlob = new Blob([JSON.stringify(trainingParams)], { type: 'text/json;charset=utf-8' });
+        const testingBlob = new Blob([JSON.stringify(testingParams)], { type: 'text/json;charset=utf-8' });
+        // NOTE: timeout to allow multiple downloads at once
+        saveAs(paramsBlob, `dataset_params_${Math.round(new Date().getTime() / 1000)}.json`);
         setTimeout(() => {
-            this.setState({
-                trainingParams,
-                testingParams,
-                datasetParams,
-                embeddingsAndTrainingDatasetLoaded: true,
-                ngramToIdDictionary,
-                pretrainedNGramVectors,
-                datasetStats: stats
-            });
+            saveAs(trainingBlob, `training_dataset_${Math.round(new Date().getTime() / 1000)}.json`);
+            setTimeout(() => {
+                saveAs(testingBlob, `testing_dataset_${Math.round(new Date().getTime() / 1000)}.json`);
+                // NOTE: using setTimeout here to render a loading state before blocking the ui
+                setTimeout(() => {
+                    this.setState({
+                        datasetParams,
+                        datasetStats: stats,
+                        embeddingsAndTrainingDatasetLoaded: true,
+                        ngramToIdDictionary,
+                        pretrainedNGramVectors,
+                        testingParams,
+                        trainingParams
+                    });
+                }, 200);
+            }, 200);
         }, 200);
     };
 }

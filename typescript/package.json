@@ -78,11 +78,7 @@
     "web:start": "npm run cleanup && gatsby develop",
     "web:deploy": "npm run cleanup && gatsby build && echo aida.dor.ai > public/CNAME && gh-pages -d public",
     "node:start": "mkdir -p ./public/models/pretrained/node/classification && mkdir -p ./public/models/pretrained/node/ner && ts-node src/node.ts",
-    "node:start:debug": "export TS_NODE_FILES=true && node --inspect-brk node_modules/.bin/ts-node src/node.ts ",
-    "python:convert:embedding": "tensorflowjs_converter --input_format=keras ../python/output/embedding.h5 ./public/models/pretrained/keras/embedding/.",
-    "python:convert:classification": "tensorflowjs_converter --input_format=keras ../python/output/trained_classifier.h5 ./public/models/pretrained/keras/classification/.",
-    "python:convert:ner": "tensorflowjs_converter --input_format=keras ../python/output/trained_ner.h5 ./public/models/pretrained/keras/ner/.",
-    "python:convert": "npm run python:convert:embedding && npm run python:convert:classification && npm run python:convert:ner"
+    "node:start:debug": "export TS_NODE_FILES=true && node --inspect-brk node_modules/.bin/ts-node src/node.ts "
   },
   "author": "Rodrigo Pimentel",
   "license": "BSD-3-Clause"

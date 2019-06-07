@@ -19,9 +19,9 @@ class ClassificationModel:
         filter_sizes = config['filterSizes']
         drop = config["drop"]
         num_classes = len(intents)
-        LEARNING_RATE = 0.0066  # use 1e-4 as default as alternative starting point
-        ADAM_BETA_1 = 0.0025
-        ADAM_BETA_2 = 0.1
+        LEARNING_RATE = 0.0012  # use 1e-4 as default as alternative starting point
+        ADAM_BETA_1 = 0.0008
+        ADAM_BETA_2 =  0.03
         optimizer = keras.optimizers.Adam(lr=LEARNING_RATE, beta_1=ADAM_BETA_1, beta_2=ADAM_BETA_2)
         # Layer 1: Convolution + max pool
         inputs = keras.layers.Input(

@@ -1,8 +1,14 @@
+import ./common.chatito
+
 %[negative]('training': '300', 'testing': '100')
-    ~[no] ~[no?] ~[please?]
-    ~[no] ~[notWhatIWant]
-    ~[no?] ~[notWhatIWant] ~[no?]
-    ~[no] ~[no?] ~[no?]
+    *[20] ~[no] 
+    *[20] ~[notWhatIWant]
+    *[10] ~[no] ~[notWhatIWant]
+    *[10] ~[notWhatIWant] ~[no]
+    ~[no] ~[no]
+    ~[notWhatIWant] ~[notWhatIWant]
+    ~[no] ~[please]
+    ~[notWhatIWant] ~[please]
 
 ~[no]
     no
@@ -35,7 +41,3 @@
     not good for me
     its not ok
     its not correct
-
-~[please]
-    please
-    pls

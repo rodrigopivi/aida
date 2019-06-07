@@ -27,7 +27,7 @@ export function dictionariesFromDataset(
     const intentTestingStats: number[] = new Array(ret.intents.length).fill(0);
     let processedTrainingSentences: Array<{ sentence: string; intentId: number; tagsForSentence: number[] }> = [];
     let processedTestingSentences: Array<{ sentence: string; intentId: number; tagsForSentence: number[] }> = [];
-    const intentsWithSlotsSet = new Set();
+    const intentsWithSlotsSet = new Set<string>();
     ret.intents.forEach(intent => {
         let containsSlots = false;
         const getProcessedSentence = (sentenceTokens: ISentenceTokens[]) => {
@@ -64,7 +64,7 @@ export function dictionariesFromDataset(
         const intentTestingProcessedSentences = testing[intent].map(getProcessedSentence);
         processedTestingSentences = processedTestingSentences.concat(intentTestingProcessedSentences);
     });
-    ret.intentsWithSlots = [...intentsWithSlotsSet];
+    ret.intentsWithSlots = Array.from(intentsWithSlotsSet);
     shuffle(processedTrainingSentences).forEach(s => {
         intentTrainingStats[s.intentId]++;
         ret.trainX.push(s.sentence);

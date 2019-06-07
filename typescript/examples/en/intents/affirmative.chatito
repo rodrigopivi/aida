@@ -1,12 +1,15 @@
+import ./common.chatito
+
 %[affirmative]('training': '300', 'testing': '100')
-    ~[yes]
-    ~[yes] ~[yes?] ~[please?]
-    you got that ~[yes]
-    you're goddamn ~[yes]
+    *[20] ~[yes]
+    *[20] ~[wantThat]
     ~[yes] ~[wantThat]
-    yes that is ~[yes]
-    ~[yes] ~[yes?] ~[yes?] ~[yes?]
-    ~[wantThat]
+    ~[yes] ~[wantThat?] ~[please?] ~[thanks?]
+    ~[yes] ~[please?]
+    ~[wantThat] ~[please?]
+    ~[yes] ~[thanks?]
+    ~[wantThat] ~[thanks?]
+    ~[yes] ~[yes?]
 
 ~[yes]
     yes
@@ -42,7 +45,3 @@
     it is fine
     im ok with this
     im good with this
-
-~[please]
-    please
-    pls

@@ -1,5 +1,6 @@
 import keras
 import numpy as np
+import tensorflowjs as tfjs
 import src.languages.en.english_tokenizer as eng
 import src.languages.es.spanish_tokenizer as spa
 import src.pipelines.zebra_wings.models.classification as cm
@@ -119,10 +120,9 @@ class AidaPipeline:
         return {'classification': classification, 'ner': ner}
 
     def save(self, cfg):
-        self.__classification_model.keras_model().save(
-            cfg['classificationPath'])
+        tfjs.converters.save_keras_model(self.__classification_model.keras_model(), cfg['classificationPath'])
         slots_length = len(self.__dataset_params["slotsToId"].keys())
         # NOTE: only save the ner model if there are slots
         if slots_length >= 2:
-            self.__ner_model.keras_model().save(cfg['nerPath'])
-        self.__embeddings_model.keras_model().save(cfg['embeddingPath'])
+            tfjs.converters.save_keras_model(self.__ner_model.keras_model(), cfg['nerPath'])
+        tfjs.converters.save_keras_model(self.__embeddings_model.keras_model(), cfg['embeddingPath'])

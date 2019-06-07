@@ -75,6 +75,8 @@ const datasetGeneration = async (configFile: string) => {
     await copyFile(dictionary, path.join(process.cwd(), config.dataset.modelsOutput, 'dictionary.json'));
     const dictionaryData = JSON.parse(fs.readFileSync(path.join(process.cwd(), config.dataset.modelsOutput, 'dictionary.json'), 'utf8'));
     const { NGRAM_TO_ID_MAP } = buildDictionary(dictionaryData);
+    process.stdout.write(`Copying relevant files to dir: ${config.dataset.modelsOutput}\n`);
+    process.stdout.write(`NOTE! non-relevant files will be removed later\n`);
     fs.writeFileSync(path.join(process.cwd(), config.dataset.modelsOutput, 'ngram_to_id_dictionary.json'), JSON.stringify(NGRAM_TO_ID_MAP));
     process.stdout.write(`Done! ${JSON.stringify(stats, null, 2)}`);
 };
