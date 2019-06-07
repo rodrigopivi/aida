@@ -8,16 +8,16 @@ function getTokenizerAndVectors(language: 'en' | 'es') {
     const lang = language ? language.toLowerCase() : language;
     if (lang === 'en') {
         return {
-            fastTextVectorsFile: path.join(__dirname, '../languages/en/fastText.en.vec'),
-            outputDictionary: path.join(__dirname, '../languages/en/dict.json'),
-            outputDictionaryExtension: path.join(__dirname, '../languages/en/dict.trigrams.json'),
+            fastTextVectorsFile: path.resolve(__dirname, '../languages/en/fastText.en.vec'),
+            outputDictionary: path.resolve(__dirname, '../languages/en/dict.json'),
+            outputDictionaryExtension: path.resolve(__dirname, '../languages/en/dict.trigrams.json'),
             tokenizer: englishTokenizer
         };
     } else if (lang === 'es') {
         return {
-            fastTextVectorsFile: path.join(__dirname, '../languages/es/fastText.es.vec'),
-            outputDictionary: path.join(__dirname, '../languages/es/dict.json'),
-            outputDictionaryExtension: path.join(__dirname, '../languages/es/dict.trigrams.json'),
+            fastTextVectorsFile: path.resolve(__dirname, '../languages/es/fastText.es.vec'),
+            outputDictionary: path.resolve(__dirname, '../languages/es/dict.json'),
+            outputDictionaryExtension: path.resolve(__dirname, '../languages/es/dict.trigrams.json'),
             tokenizer: spanishTokenizer
         };
     }
@@ -39,7 +39,7 @@ const createDictionaryFromFastText = (language: 'en' | 'es') => {
         input: fs.createReadStream(fastTextVectorsFile)
     });
     /* This module is used to create a custom json dictionary of pretrained fasttext characters and bigrams
-     * we remove all the unwanted stuff, to go from a 6gb dictionary to some megabytes. This utility 
+     * we remove all the unwanted stuff, to go from a 6gb dictionary to some megabytes. This utility
      * requires the pretrained fasttext 300 dimensions vectors already downloaded from https://fasttext.cc/
      *
      * The dictionary is composed of:

@@ -24,10 +24,10 @@ async function copyFile(source: string, target: string) {
 }
 
 const processDataset = async (configFile: string) => {
-    const config: IAidaPipelineConfig = JSON.parse(fs.readFileSync(path.join(process.cwd(), configFile), 'utf8'));
+    const config: IAidaPipelineConfig = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), configFile), 'utf8'));
     const { dictionary } = getTokenizerAndDictionaryForLanguage(config.language);
-    const fullTrainingDatasetPath = path.join(process.cwd(), config.dataset.trainingDataset);
-    const fullTestingDatasetPath = path.join(process.cwd(), config.dataset.testingDataset);
+    const fullTrainingDatasetPath = path.resolve(process.cwd(), config.dataset.trainingDataset);
+    const fullTestingDatasetPath = path.resolve(process.cwd(), config.dataset.testingDataset);
     const trainingChatitoDataset: webAdapter.IDefaultDataset = JSON.parse(fs.readFileSync(fullTrainingDatasetPath, 'utf8'));
     const testingChatitoDataset: webAdapter.IDefaultDataset = JSON.parse(fs.readFileSync(fullTestingDatasetPath, 'utf8'));
 
@@ -38,10 +38,13 @@ const processDataset = async (configFile: string) => {
         trainingChatitoDataset
     });
     process.stdout.write(`Copying relevant files to dir: ${config.dataset.modelsOutput}\n`);
-    await copyFile(dictionary, path.join(process.cwd(), config.dataset.modelsOutput, 'dictionary.json'));
-    const dictionaryData = JSON.parse(fs.readFileSync(path.join(process.cwd(), config.dataset.modelsOutput, 'dictionary.json'), 'utf8'));
+    await copyFile(dictionary, path.resolve(process.cwd(), config.dataset.modelsOutput, 'dictionary.json'));
+    const dictionaryData = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), config.dataset.modelsOutput, 'dictionary.json'), 'utf8'));
     const { NGRAM_TO_ID_MAP } = buildDictionary(dictionaryData);
-    fs.writeFileSync(path.join(process.cwd(), config.dataset.modelsOutput, 'ngram_to_id_dictionary.json'), JSON.stringify(NGRAM_TO_ID_MAP));
+    fs.writeFileSync(
+        path.resolve(process.cwd(), config.dataset.modelsOutput, 'ngram_to_id_dictionary.json'),
+        JSON.stringify(NGRAM_TO_ID_MAP)
+    );
     process.stdout.write(`NOTE! non-relevant files will be removed later\n`);
 };
 

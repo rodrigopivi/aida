@@ -13,9 +13,9 @@ interface IRetLanguage {
 export function getTokenizerAndDictionaryForLanguage(language: 'en' | 'es'): IRetLanguage {
     const lang = language ? language.toLowerCase() : language;
     if (lang === 'en') {
-        return { tokenizer: englishTokenizer, dictionary: path.join(__dirname, '../languages/en/dict.json') };
+        return { tokenizer: englishTokenizer, dictionary: path.resolve(__dirname, '../languages/en/dict.json') };
     } else if (lang === 'es') {
-        return { tokenizer: spanishTokenizer, dictionary: path.join(__dirname, '../languages/es/dict.json') };
+        return { tokenizer: spanishTokenizer, dictionary: path.resolve(__dirname, '../languages/es/dict.json') };
     }
     throw new Error("Invalid config language. Only 'en' and 'es' are supported.");
 }
@@ -35,7 +35,7 @@ export const datasetGeneration = async (config: IDatasetGenerationArgs) => {
     } = dictionariesFromDataset(config.trainingChatitoDataset, config.testingChatitoDataset, tokenizer, config.language);
     process.stdout.write(`Saving files...\n`);
     fs.writeFileSync(
-        path.join(process.cwd(), config.outputPath, 'dataset_params.json'),
+        path.resolve(process.cwd(), config.outputPath, 'dataset_params.json'),
         JSON.stringify({
             intents,
             intentsWithSlots,
@@ -45,7 +45,7 @@ export const datasetGeneration = async (config: IDatasetGenerationArgs) => {
         } as IDatasetParams)
     );
     fs.writeFileSync(
-        path.join(process.cwd(), config.outputPath, 'dataset_training.json'),
+        path.resolve(process.cwd(), config.outputPath, 'dataset_training.json'),
         JSON.stringify({
             trainX,
             trainY,
@@ -53,7 +53,7 @@ export const datasetGeneration = async (config: IDatasetGenerationArgs) => {
         } as ITrainingParams)
     );
     fs.writeFileSync(
-        path.join(process.cwd(), config.outputPath, 'dataset_testing.json'),
+        path.resolve(process.cwd(), config.outputPath, 'dataset_testing.json'),
         JSON.stringify({
             testX,
             testY,
