@@ -1,0 +1,10 @@
+.vscode/
+.DS_Store
+.cache
+.env
+examples
+node_modules
+plugins
+public
+src
+web
