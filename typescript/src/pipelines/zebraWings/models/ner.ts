@@ -274,7 +274,7 @@ export default class NerModel extends types.PipelineModel implements types.IPipe
     ): Promise<types.IPredictionStats> => {
         const handler = resultsHandler ? resultsHandler : this.defaultResultsLogger;
         const stats: types.IPredictionStats = { correct: 0, wrong: 0 };
-        const batchSize = this.config.batchSize; // this.config.batchSize
+        const batchSize = this.config.batchSize;
         const testX = chunk(testExamples.testX, batchSize);
         const testY = chunk(testExamples.testY, batchSize);
         const testY2 = chunk(testExamples.testY2, batchSize);

@@ -30,8 +30,10 @@
 <div>
   <h2>Getting started</h2>
 
-  <h3>Aida is an experimental library for building natural language predictive models. It can help you build a simple chatbot, mood detector and other similar tasks. It's like building a smart regex but on steroids because it's using pre-trained character bigram embeddings to build some idea of how words relate.
-  </h3>
+  <h3>Aida helps you prototype chatbots, fast.</h3>
+  <p>
+  This is an experimental library for building natural language processing models. It can help you build a simple chatbot, and simple assistants. It's like building a smart regular expression for detecting sentence intentions and extracting key entities, but its much better because it's using neural networks and pre-trained characters bigram embeddings, so it has some general language knowledge.
+  </p>
   <ul>
       <li>
           <strong>It's easy to use:</strong> Getting started by creating a dataset and training couldn't be easier thanks to&nbsp;
@@ -74,9 +76,44 @@ It's a chatbott running from the browser using Tensorflow.js and using the Web S
 
 You can train from the browser [using Javascript and Tensorflow.js](https://aida.dor.ai/train) (using your local GPU resources) or from the browser [using Python and Tensorflow with Keras](https://colab.research.google.com/drive/1nzjxR7w2X99qlxjSD4pGOWksMLqK0eqZ) thanks to Google Colaboratory's free TPU's. There is no need to setup a local environment, the trained models can be saved for later use.
 
-## Local setup
 
-Alternatively to training online, you can setup the project locally. Clone the GH proejct and install dependencies for node and python (given NodeJS with yarn and Python3 are installed):
+## Local NPM package setup
+
+1 - Install the npm package:
+```
+yarn add aida-ai
+```
+
+Install the npm package:
+```
+yarn add aida-ai
+```
+
+2 - Create your chatito definition files, here you define your intents and your possible sentence models in mutiple `.chatito` files, and save them to a directory. e.g.: ´./chatito´
+
+3 - Create a config file like `aida_config.json` where you define the path to your chatito definition files, the chatito dataset output path and the output path for the trained NLP models:
+```
+{
+  "chatito": {
+    "inputPath": "./chatito",
+    "outputPath": "./dataset"
+  },
+  "aida": {
+    "outputPath": "./model",
+    "language": "en"
+  }
+}
+```
+
+  - Generate and encode the dataset for training: `npx aida-ai aida_config.json --action dataset`. The dataset will be available at the configured output path.
+
+  - Start training: `npx aida-ai aida_config.json --action train`. The models will be saved at the configured output path.
+
+  - Run `npx aida-ai aida_config.json --action test` for trying the generated testing dataset.
+
+## Local setup cloning the project
+
+Alternatively to training online and using npm package, you can setup the project locally. Clone the GH proejct and install dependencies for node and python (given NodeJS with yarn and Python3 are installed):
 
   - Run `yarn install` from the `./typescript` directory
   - Run `pip3 install -r requirements.txt` from the `./python` directory
