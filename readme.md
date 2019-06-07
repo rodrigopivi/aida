@@ -79,19 +79,16 @@ You can train from the browser [using Javascript and Tensorflow.js](https://aida
 
 ## Local NPM package setup
 
-1 - Install the npm package:
+- Install the npm package:
+
 ```
-yarn add aida-ai
+yarn add aida-nlp
 ```
 
-Install the npm package:
-```
-yarn add aida-ai
-```
+  - Create your chatito definition files, here you define your intents and your possible sentence models in mutiple `.chatito` files, and save them to a directory. e.g.: ´./chatito´
 
-2 - Create your chatito definition files, here you define your intents and your possible sentence models in mutiple `.chatito` files, and save them to a directory. e.g.: ´./chatito´
+  - Create a config file like `aida_config.json` where you define the path to your chatito definition files, the chatito dataset output path and the output path for the trained NLP models:
 
-3 - Create a config file like `aida_config.json` where you define the path to your chatito definition files, the chatito dataset output path and the output path for the trained NLP models:
 ```
 {
   "chatito": {
@@ -105,11 +102,11 @@ yarn add aida-ai
 }
 ```
 
-  - Generate and encode the dataset for training: `npx aida-ai aida_config.json --action dataset`. The dataset will be available at the configured output path.
+  - Generate and encode the dataset for training: `npx aida-nlp aida_config.json --action dataset`. The dataset will be available at the configured output path.
 
-  - Start training: `npx aida-ai aida_config.json --action train`. The models will be saved at the configured output path.
+  - Start training: `npx aida-nlp aida_config.json --action train`. The models will be saved at the configured output path.
 
-  - Run `npx aida-ai aida_config.json --action test` for trying the generated testing dataset.
+  - Run `npx aida-nlp aida_config.json --action test` for trying the generated testing dataset.
 
 ## Local setup cloning the project
 
