@@ -4,6 +4,7 @@ __pycache__/
 
 python/.ipynb_checkpoints/
 typescript/public
+typescript/dist
 .cache/
 .env
 *.h5

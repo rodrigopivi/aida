@@ -1,8 +1,11 @@
 {
   "name": "aida",
   "version": "0.1.0",
-  "description": "",
-  "main": "src/node.ts",
+  "description": "Build chatbots powered by simple deep learning models",
+  "bin": {
+    "aida": "./dist/bin.js"
+  },
+  "main": "./dist/main.js",
   "dependencies": {
     "@tensorflow/tfjs": "1.1.2",
     "@tensorflow/tfjs-node": "1.1.2",
@@ -63,7 +66,8 @@
   },
   "scripts": {
     "lint": "npx tslint -c tslint.json 'src/**/*.ts'",
-    "cleanup": "rm -rf .cache && find public -not -name models -maxdepth 1 -not -name public -not -iname '*.png' -not -iname '*.ico' -not -iname '*.xml' -not -iname '*.svg' -not -iname '*.webmanifest' -exec rm -rv {} \\;",
+    "cleanup": "rm -rf dist && rm -rf .cache && find public -not -name models -maxdepth 1 -not -name public -not -iname '*.png' -not -iname '*.ico' -not -iname '*.xml' -not -iname '*.svg' -not -iname '*.webmanifest' -exec rm -rv {} \\;",
+    "prepublish": "rm -rf ./dist && tsc --project ./tsconfig_npm.json --skipLibCheck",
     "prettier": "prettier --write '{web,src}/**/*.{ts,tsx}'",
     "dictionary:en:generate": "ts-node src/utils/createDictionaryFromFastext.ts en",
     "dictionary:es:generate": "ts-node src/utils/createDictionaryFromFastext.ts es",
@@ -80,6 +84,24 @@
     "node:start": "mkdir -p ./public/models/pretrained/node/classification && mkdir -p ./public/models/pretrained/node/ner && ts-node src/node.ts",
     "node:start:debug": "export TS_NODE_FILES=true && node --inspect-brk node_modules/.bin/ts-node src/node.ts "
   },
+  "engines": {
+    "node": ">=8.11.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rodrigopivi/aida.git"
+  },
+  "keywords": [
+    "chatbot",
+    "chatbots",
+    "conversational ux",
+    "conversational user experience",
+    "virtual assistant",
+    "natural language processing",
+    "natural language understanding",
+    "nlp"
+  ],
   "author": "Rodrigo Pimentel",
-  "license": "BSD-3-Clause"
+  "homepage": "https://aida.dor.ai",
+  "license": "MIT"
 }
