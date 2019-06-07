@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import * as tf from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-node';
 // TODO: Allow loading GPU
 // import '@tensorflow/tfjs-node-gpu';
@@ -94,15 +95,15 @@ export interface IAidaConfig {
         } else {
             const pipelineDefinition = merge({}, defaultPipelineDefinition, { config: { default: { batchSize: 120 } } });
             const datasetParams: types.IDatasetParams = JSON.parse(fs.readFileSync(aidaDatasetParamsPath, 'utf8'));
-            const pipeline = new AidaPipeline({
-                datasetParams,
-                logger,
-                ngramToIdDictionary,
-                pipelineDefinition,
-                pretrainedNGramVectors
-            });
             if (action === 'train') {
                 const trainingDataset: types.ITrainingParams = JSON.parse(fs.readFileSync(aidaTrainingDatasetPath, 'utf8'));
+                const pipeline = new AidaPipeline({
+                    datasetParams,
+                    logger,
+                    ngramToIdDictionary,
+                    pipelineDefinition,
+                    pretrainedNGramVectors
+                });
                 await pipeline.train(trainingDataset);
                 await pipeline.save({
                     classificationPath: `file://${config.aida.outputPath}/classification`,
@@ -111,6 +112,19 @@ export interface IAidaConfig {
                 });
             } else if (action === 'test') {
                 const testingDataset: types.ITestingParams = JSON.parse(fs.readFileSync(aidaTestingDatasetPath, 'utf8'));
+                const pretrainedEmbedding = await tf.loadLayersModel(`file://${config.aida.outputPath}/classification/model.json`, {
+                    strict: false
+                });
+                const pretrainedClassifier = await tf.loadLayersModel(`file://${config.aida.outputPath}/embedding/model.json`);
+                const pretrainedNer = await tf.loadLayersModel(`file://${config.aida.outputPath}/ner/model.json`);
+                const pipeline = new AidaPipeline({
+                    datasetParams,
+                    logger,
+                    ngramToIdDictionary,
+                    pretrainedClassifier,
+                    pretrainedEmbedding,
+                    pretrainedNer
+                });
                 const stats = await pipeline.test(testingDataset);
                 logger.log(stats);
             }
