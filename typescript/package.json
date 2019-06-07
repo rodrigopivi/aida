@@ -1,6 +1,6 @@
 {
   "name": "aida-ai",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Build chatbots powered by simple deep learning models",
   "bin": {
     "aida-ai": "./dist/bin.js"

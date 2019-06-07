@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+import '@tensorflow/tfjs-node';
+// TODO: Allow loading GPU
+// import '@tensorflow/tfjs-node-gpu';
 import * as webAdapter from 'chatito/dist/adapters/web';
 import { execSync } from 'child_process';
 import * as fs from 'fs';
