@@ -62,11 +62,11 @@ export interface IAidaConfig {
             process.exit(1);
         }
         const chatitoInputPath = getFileWithPath(config.chatito.inputPath);
-        const chatitoOutputPath = getFileWithPath(config.chatito.inputPath);
+        const chatitoOutputPath = getFileWithPath(config.chatito.outputPath);
         const aidaOutputPath = getFileWithPath(config.aida.outputPath);
-        const aidaTrainingDatasetPath = path.resolve(aidaOutputPath, 'dataset_params.json');
-        const aidaTestingDatasetPath = path.resolve(aidaOutputPath, 'dataset_training.json');
-        const aidaDatasetParamsPath = path.resolve(aidaOutputPath, 'dataset_testing.json');
+        const aidaTrainingDatasetPath = path.resolve(aidaOutputPath, 'dataset_training.json');
+        const aidaTestingDatasetPath = path.resolve(aidaOutputPath, 'dataset_testing.json');
+        const aidaDatasetParamsPath = path.resolve(aidaOutputPath, 'dataset_params.json');
         const pretrainedNGramVectors = new Map<string, Float32Array>(require('../dictionary/dictionary.json'));
         const ngramToIdDictionary: { [key: string]: number } = require('../dictionary/ngram_to_id_dictionary.json');
 
