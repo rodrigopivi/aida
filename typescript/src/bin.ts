@@ -112,10 +112,10 @@ export interface IAidaConfig {
                 });
             } else if (action === 'test') {
                 const testingDataset: types.ITestingParams = JSON.parse(fs.readFileSync(aidaTestingDatasetPath, 'utf8'));
-                const pretrainedEmbedding = await tf.loadLayersModel(`file://${config.aida.outputPath}/classification/model.json`, {
+                const pretrainedEmbedding = await tf.loadLayersModel(`file://${config.aida.outputPath}/embedding/model.json`, {
                     strict: false
                 });
-                const pretrainedClassifier = await tf.loadLayersModel(`file://${config.aida.outputPath}/embedding/model.json`);
+                const pretrainedClassifier = await tf.loadLayersModel(`file://${config.aida.outputPath}/classification/model.json`);
                 const pretrainedNer = await tf.loadLayersModel(`file://${config.aida.outputPath}/ner/model.json`);
                 const pipeline = new AidaPipeline({
                     datasetParams,
