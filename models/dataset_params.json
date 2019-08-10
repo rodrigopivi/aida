@@ -1,1 +1,1 @@
-{"intents":["addEventToCalendar","affirmative","bye","greet","negative","playMusic","wtf"],"intentsWithSlots":["addEventToCalendar","playMusic"],"language":"en","maxWordsPerSentence":25,"slotsToId":{"O":0,"dateTime":1,"calendarEvent":2,"song":3,"artist":4}}
+{"intents":["addEventToCalendar","affirmative","bye","greet","negative","playMusic","wtf"],"intentsWithSlots":["addEventToCalendar","playMusic"],"language":"en","maxWordsPerSentence":28,"slotsToId":{"O":0,"dateTime":1,"calendarEvent":2,"artist":3,"song":4}}
