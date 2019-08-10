@@ -9,7 +9,7 @@ import { dictionariesFromDataset } from './dictionaryUtils';
 interface IRetLanguage {
     tokenizer: IAidaTokenizer;
     dictionary: string;
-};
+}
 export function getTokenizerAndDictionaryForLanguage(language: 'en' | 'es'): IRetLanguage {
     const lang = language ? language.toLowerCase() : language;
     if (lang === 'en') {
