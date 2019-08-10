@@ -1,10 +1,10 @@
 import ./common.chatito
 
 %[bye]('training': '300', 'testing': '100')
-    *[20] ~[bye]
-    *[20] ~[leaving]
-    *[10]~[bye] ~[leaving]
-    *[10] ~[leaving] ~[bye]
+    *[20%] ~[bye]
+    *[20%] ~[leaving]
+    *[10%]~[bye] ~[leaving]
+    *[10%] ~[leaving] ~[bye]
     ~[bye] ~[bye]
     ~[leaving] ~[leaving]
     ~[leaving] ~[bye?] ~[thanks?]

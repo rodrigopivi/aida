@@ -2,11 +2,11 @@ import ./common.chatito
 
 // Add custom events to a calendar by start date/date-time
 %[addEventToCalendar]('training': '1000', 'testing': '500')
-    *[20] ~[set the] @[calendarEvent#alarm] ~[at?] @[dateTime]
-    *[10] ~[at?] @[dateTime] ~[set the] @[calendarEvent#alarm]
-    *[20] ~[add to calendar] ~[at] @[dateTime] ~[i have?] @[calendarEvent] 
-    *[10] @[calendarEvent] ~[at] @[dateTime]
-    *[10] ~[add to calendar] ~[i have] @[calendarEvent] ~[at] @[dateTime]
+    *[20%] ~[set the] @[calendarEvent#alarm] ~[at?] @[dateTime]
+    *[10%] ~[at?] @[dateTime] ~[set the] @[calendarEvent#alarm]
+    *[20%] ~[add to calendar] ~[at] @[dateTime] ~[i have?] @[calendarEvent] 
+    *[10%] @[calendarEvent] ~[at] @[dateTime]
+    *[10%] ~[add to calendar] ~[i have] @[calendarEvent] ~[at] @[dateTime]
     ~[please?] @[calendarEvent] ~[at] @[dateTime] ~[thanks?]
     ~[please?] ~[set the] @[calendarEvent#alarm] ~[at] @[dateTime] ~[thanks?]
     ~[please?] ~[at?] @[dateTime] ~[set the] @[calendarEvent#alarm] ~[thanks?]

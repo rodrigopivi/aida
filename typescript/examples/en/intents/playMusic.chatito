@@ -2,10 +2,10 @@ import ./common.chatito
 
 // Play music by artist and/or song
 %[playMusic]('training': '800', 'testing': '500')
-    *[20] ~[iWantToHearASong] ~[fromAuthor] @[artist]
-    *[20] ~[iWantTheSong] @[song]
-    *[20] ~[iWantTheSong] @[song] ~[fromAuthor] @[artist]
-    *[20] ~[fromAuthor] @[artist] ~[iWantTheSong] @[song]
+    *[20%] ~[iWantToHearASong] ~[fromAuthor] @[artist]
+    *[20%] ~[iWantTheSong] @[song]
+    *[20%] ~[iWantTheSong] @[song] ~[fromAuthor] @[artist]
+    *[20%] ~[fromAuthor] @[artist] ~[iWantTheSong] @[song]
     ~[i want] ~[from] @[artist] ~[the song] @[song]
     ~[from] @[artist] ~[i want] ~[the song] @[song]
     ~[the song] @[song] ~[from] @[artist]
