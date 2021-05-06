@@ -34,7 +34,7 @@
     "babel-loader": "8.0.6",
     "babel-plugin-import": "1.12.0",
     "babel-plugin-styled-components": "1.10.6",
-    "chrono-node": "1.3.11",
+    "chrono-node": "2.2.4",
     "codeflask": "1.4.1",
     "file-saver": "2.0.2",
     "gatsby": "2.13.57",
