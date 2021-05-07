@@ -10,7 +10,7 @@
     "@tensorflow/tfjs": "1.2.7",
     "@tensorflow/tfjs-node": "1.2.7",
     "chatito": "2.3.4",
-    "lodash": "4.17.15",
+    "lodash": "4.17.21",
     "ts-node": "8.3.0"
   },
   "devDependencies": {
